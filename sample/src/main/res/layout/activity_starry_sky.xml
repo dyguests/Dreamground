@@ -22,10 +22,11 @@
         android:id="@+id/tv_text"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="@dimen/unit"
         android:text="@string/large_text"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="parent"
+        android:textColor="@color/read_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 </android.support.constraint.ConstraintLayout>

@@ -24,7 +24,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
 
     /** 星星总数量 */
     private var starryCount: Int = 0
-    private var starryAlpha255 = (0.2f * 255).toInt()
+    private var starryAlpha255 = 0
     // ------------------------------- 输入参数 -------------------------------
 
     /**
@@ -33,7 +33,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     private val density = 0.0001f
     /** 星星的半径 */
     private val size = 4f
-    private var starryAlpha = .2f
+    private var starryAlpha = .8f
         set(value) {
             field = value
             starryAlpha255 = (value * 255).toInt()
@@ -43,7 +43,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     private val flashIterval = 100
 
     init {
-
+        starryAlpha = .8f
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
