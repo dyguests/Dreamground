@@ -24,7 +24,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
 
     /** 星星总数量 */
     private var starryCount: Int = 0
-
+    private var opacity255 = (0.2f * 255).toInt()
     // ------------------------------- 输入参数 -------------------------------
 
     /**
@@ -32,8 +32,15 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
      */
     private val density = 0.0001f
     /** 星星的半径 */
-    private val size = 10f
+    private val size = 4f
+    private var opacity = 0.8f
+        set(value) {
+            field = value
+            opacity255 = (value * 255).toInt()
+        }
 
+    /** 闪烁间隔 */
+    private val flashIterval = 100
 
     init {
 
@@ -58,7 +65,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
             val x = random.nextInt(width)
             val y = random.nextInt(height)
 
-            paint.color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255))
+            paint.color = Color.argb(opacity255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
 
             canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
 //            canvas.drawCircle(x.toFloat(), y.toFloat(), size, paint)
