@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import java.util.*
 
@@ -13,11 +14,7 @@ import java.util.*
  */
 class StarrySkyView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
     private val paint by lazy {
-        Paint().apply {
-            style = Paint.Style.FILL
-            strokeJoin = Paint.Join.ROUND
-            strokeWidth = starrySize.toFloat()
-        }
+        Paint()
     }
 
     private val random by lazy { Random() }
@@ -46,12 +43,10 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
         val a = context.obtainStyledAttributes(attrs, R.styleable.StarrySkyView, defStyleAttr, R.style.Widget_Dreamground_StarrySkyView)
 
         starryDensity = a.getFloat(R.styleable.StarrySkyView_starryDensity, DENSITY_DEFAULT)
-        starrySize = a.getDimensionPixelSize(R.styleable.StarrySkyView_starrySize, dpToPx(2))
+        starrySize = a.getDimensionPixelSize(R.styleable.StarrySkyView_starrySize, dpToPx(1))
         starryAlpha = a.getFloat(R.styleable.StarrySkyView_starryAlpha, 1f)
 
         a.recycle()
-
-        paint.strokeWidth = starrySize.toFloat()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -75,8 +70,8 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
 
             paint.color = Color.argb(starryAlpha255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
 
-            canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
-//            canvas.drawCircle(x.toFloat(), y.toFloat(), starrySize, paint)
+//            canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
+            canvas.drawCircle(x.toFloat(), y.toFloat(), starrySize.toFloat(), paint)
         }
 
     }

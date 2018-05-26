@@ -10,13 +10,13 @@
         android:id="@+id/starry_sky"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@android:color/black"
+        android:background="#9cd6bd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:starryAlpha="1"
-        app:starryDensity="0.001"
+        app:starryAlpha=".1"
+        app:starryDensity="0.0001"
         app:starrySize="20dp" />
 
     <TextView
@@ -25,7 +25,6 @@
         android:layout_height="0dp"
         android:padding="@dimen/unit"
         android:text="@string/large_text"
-        android:textColor="@color/read_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
