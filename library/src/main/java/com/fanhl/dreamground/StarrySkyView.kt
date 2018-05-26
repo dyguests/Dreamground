@@ -14,7 +14,7 @@ import java.util.*
 class StarrySkyView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
     private val paint by lazy {
         Paint().apply {
-            style = Paint.Style.FILL_AND_STROKE
+            style = Paint.Style.FILL
             strokeJoin = Paint.Join.ROUND
             strokeWidth = starrySize.toFloat()
         }
@@ -30,7 +30,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     /**
      * 单位单积(1px*1px)内的星星的数量
      */
-    private var density = DENSITY_DEFAULT
+    private var starryDensity = DENSITY_DEFAULT
     /** 星星的半径 */
     private var starrySize = 0
     private var starryAlpha = 1f
@@ -45,7 +45,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.StarrySkyView, defStyleAttr, R.style.Widget_Dreamground_StarrySkyView)
 
-        density = a.getFloat(R.styleable.StarrySkyView_density, DENSITY_DEFAULT)
+        starryDensity = a.getFloat(R.styleable.StarrySkyView_starryDensity, DENSITY_DEFAULT)
         starrySize = a.getDimensionPixelSize(R.styleable.StarrySkyView_starrySize, dpToPx(2))
         starryAlpha = a.getFloat(R.styleable.StarrySkyView_starryAlpha, 1f)
 
@@ -67,7 +67,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
         val width = canvas.width
         val height = canvas.height
 
-        starryCount = (width * height * density).toInt()
+        starryCount = (width * height * starryDensity).toInt()
 
         for (i in 0 until starryCount) {
             val x = random.nextInt(width)

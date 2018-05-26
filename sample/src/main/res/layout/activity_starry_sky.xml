@@ -16,6 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:starryAlpha="1"
+        app:starryDensity="0.001"
         app:starrySize="20dp" />
 
     <TextView

@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Widget_Dreamground_StarrySkyView">
-        <item name="density">0.0001</item>
+        <item name="starryDensity">0.0001</item>
         <item name="starrySize">10dp</item>
         <item name="starryAlpha">0.5</item>
     </style>
