@@ -16,7 +16,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
         Paint().apply {
             style = Paint.Style.FILL_AND_STROKE
             strokeJoin = Paint.Join.ROUND
-            strokeWidth = size.toFloat()
+            strokeWidth = starrySize.toFloat()
         }
     }
 
@@ -32,7 +32,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
      */
     private var density = DENSITY_DEFAULT
     /** 星星的半径 */
-    private var size = 0
+    private var starrySize = 0
     private var starryAlpha = 1f
         set(value) {
             field = value
@@ -46,10 +46,12 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
         val a = context.obtainStyledAttributes(attrs, R.styleable.StarrySkyView, defStyleAttr, R.style.Widget_Dreamground_StarrySkyView)
 
         density = a.getFloat(R.styleable.StarrySkyView_density, DENSITY_DEFAULT)
-        size = a.getDimensionPixelSize(R.styleable.StarrySkyView_size, dpToPx(2))
+        starrySize = a.getDimensionPixelSize(R.styleable.StarrySkyView_starrySize, dpToPx(2))
         starryAlpha = a.getFloat(R.styleable.StarrySkyView_starryAlpha, 1f)
 
         a.recycle()
+
+        paint.strokeWidth = starrySize.toFloat()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -74,7 +76,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
             paint.color = Color.argb(starryAlpha255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
 
             canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
-//            canvas.drawCircle(x.toFloat(), y.toFloat(), size, paint)
+//            canvas.drawCircle(x.toFloat(), y.toFloat(), starrySize, paint)
         }
 
     }

@@ -3,7 +3,7 @@
     <declare-styleable name="StarrySkyView">
         <!-- starry count per 1dp*1dp -->
         <attr name="density" format="float" />
-        <attr name="size" format="dimension" />
+        <attr name="starrySize" format="dimension" />
         <attr name="starryAlpha" format="float" />
     </declare-styleable>
 </resources>
