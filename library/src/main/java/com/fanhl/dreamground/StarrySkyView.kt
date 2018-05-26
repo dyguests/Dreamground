@@ -1,15 +1,11 @@
 package com.fanhl.dreamground
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.SurfaceTexture
+import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.TextureView
-import android.view.View
 import java.util.*
+
 
 /**
  * 星空
@@ -20,6 +16,8 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private val random by lazy { Random() }
+
+    private var drawThread: RenderingThread? = null
 
     /** 星星总数量 */
     private var starryCount: Int = 0
@@ -79,13 +77,16 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-
+        drawThread = RenderingThread(this)
+        drawThread?.start()
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+        drawThread?.stopRendering()
+        drawThread = null
         return true
     }
 
@@ -99,5 +100,52 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
 
     companion object {
         const val DENSITY_DEFAULT = 0.0001f
+    }
+
+    internal class RenderingThread(private val mSurface: TextureView) : Thread() {
+        @Volatile
+        private var mRunning = true
+
+        override fun run() {
+            var x = 0.0f
+            var y = 0.0f
+            var speedX = 5.0f
+            var speedY = 3.0f
+
+            val paint = Paint()
+            paint.color = -0xff0100
+
+            while (mRunning && !Thread.interrupted()) {
+                val canvas = mSurface.lockCanvas(null)
+                try {
+                    canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
+                    canvas.drawRect(x, y, x + 20.0f, y + 20.0f, paint)
+                } finally {
+                    mSurface.unlockCanvasAndPost(canvas)
+                }
+
+                if (x + 20.0f + speedX >= mSurface.width || x + speedX <= 0.0f) {
+                    speedX = -speedX
+                }
+                if (y + 20.0f + speedY >= mSurface.height || y + speedY <= 0.0f) {
+                    speedY = -speedY
+                }
+
+                x += speedX
+                y += speedY
+
+                try {
+                    Thread.sleep(15)
+                } catch (e: InterruptedException) {
+                    // Interrupted
+                }
+
+            }
+        }
+
+        internal fun stopRendering() {
+            interrupt()
+            mRunning = false
+        }
     }
 }
