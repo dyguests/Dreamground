@@ -33,7 +33,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     private val density = 0.0001f
     /** 星星的半径 */
     private val size = 4f
-    private var starryAlpha = .8f
+    private var starryAlpha = 1f
         set(value) {
             field = value
             starryAlpha255 = (value * 255).toInt()
@@ -43,6 +43,9 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
     private val flashIterval = 100
 
     init {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.StarrySkyView, defStyleAttr, R.style.Widget_Dreamground_StarrySkyView)
+
+
         starryAlpha = .8f
     }
 

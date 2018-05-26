@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="StarrySkyView">
-        <attr name="starry_color" format="color" />
+        <!-- starry count per 1dp*1dp -->
+        <attr name="density" format="float" />
+        <attr name="size" format="dimension" />
+        <attr name="starryAlpha" format="float" />
     </declare-styleable>
 </resources>
