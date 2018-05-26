@@ -4,15 +4,17 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.SurfaceTexture
 import android.util.AttributeSet
 import android.util.Log
+import android.view.TextureView
 import android.view.View
 import java.util.*
 
 /**
  * 星空
  */
-class StarrySkyView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
+class StarrySkyView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
     private val paint by lazy {
         Paint()
     }
@@ -47,6 +49,8 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
         starryAlpha = a.getFloat(R.styleable.StarrySkyView_starryAlpha, 1f)
 
         a.recycle()
+
+        surfaceTextureListener = this
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -54,9 +58,7 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
 
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-
+    fun onDraw2(canvas: Canvas) {
         // FIXME: 2018/5/25 fanhl 之后把宽高 提到onMeasure中去
 
         val width = canvas.width
@@ -76,7 +78,22 @@ class StarrySkyView @JvmOverloads constructor(context: Context, attrs: Attribute
 
     }
 
-    internal fun dpToPx(dps: Int): Int {
+    override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+
+    }
+
+    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
+    }
+
+    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+        return true
+    }
+
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+
+    }
+
+    private fun dpToPx(dps: Int): Int {
         return Math.round(resources.displayMetrics.density * dps)
     }
 
