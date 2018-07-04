@@ -1,6 +1,7 @@
 package com.fanhl.dreamground
 
 import android.content.Context
+import android.graphics.Paint
 import android.graphics.SurfaceTexture
 import android.os.Handler
 import android.os.Message
@@ -16,6 +17,10 @@ import android.view.TextureView
  * @author fanhl
  */
 class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
+    private val paint by lazy {
+        Paint()
+    }
+
     private var mSurface: Surface? = null
 
     private val mHandler = object : Handler() {
@@ -23,8 +28,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             mCount++
             val canvas = mSurface?.lockCanvas(null)
             canvas?.drawColor(-0x1)//擦除原来的内容
-            canvas?.drawText("Hello World$mCount", (width shr 1).toFloat(), (height shr 1).toFloat(), mPaint)
-            mSurface.unlockCanvasAndPost(canvas)
+            canvas?.drawText("Hello World$mCount", (width shr 1).toFloat(), (height shr 1).toFloat(), paint)
+            mSurface?.unlockCanvasAndPost(canvas)
             sendEmptyMessageDelayed(0x0001, DELAY)
         }
     }
@@ -50,6 +55,10 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun run() {
+
     }
 
     companion object {
