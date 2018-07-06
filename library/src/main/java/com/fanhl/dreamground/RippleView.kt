@@ -1,7 +1,10 @@
 package com.fanhl.dreamground
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.SurfaceTexture
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
@@ -79,7 +82,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     companion object {
-        private const val REFERSH_INTERVAL = 20L
+        /**刷新间隔*/
+        private const val REFRESH_INTERVAL = 20L
     }
 
     /**
@@ -95,7 +99,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             while (running && !Thread.interrupted()) {
                 updateSurface(surface)
                 try {
-                    sleep(REFERSH_INTERVAL)
+                    sleep(REFRESH_INTERVAL)
                 } catch (e: InterruptedException) {
                 }
             }
