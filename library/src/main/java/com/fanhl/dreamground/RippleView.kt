@@ -29,6 +29,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     init {
         paint.color = -0xff0100
 
+        surfaceTextureListener = this
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
@@ -77,7 +78,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         }
 
         xx += speedX
-        xx += speedY
+        yy += speedY
     }
 
     companion object {
