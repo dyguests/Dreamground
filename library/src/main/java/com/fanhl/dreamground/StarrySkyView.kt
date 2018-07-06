@@ -10,6 +10,7 @@ import java.util.*
 /**
  * 星空
  */
+@Deprecated("这个是测试用的")
 class StarrySkyView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
     private val paint by lazy {
         Paint()
