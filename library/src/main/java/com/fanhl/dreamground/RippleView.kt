@@ -16,7 +16,7 @@ import android.view.TextureView
  *
  * @author fanhl
  */
-class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
+class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr) {
     private var renderThread: RenderThread? = null
 
     var xx = 0.0f
@@ -29,24 +29,24 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     init {
         paint.color = -0xff0100
 
-        surfaceTextureListener = this
-    }
+        surfaceTextureListener = object : SurfaceTextureListener {
+            override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+                renderThread = RenderThread(surface ?: return, ::updateSurface)
+                renderThread?.start()
+            }
 
-    override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-        renderThread = RenderThread(surface ?: return, ::updateSurface)
-        renderThread?.start()
-    }
+            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
+            }
 
-    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-    }
+            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+                renderThread?.stopRendering()
+                renderThread = null
+                return true
+            }
 
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-        renderThread?.stopRendering()
-        renderThread = null
-        return true
-    }
-
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+            override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+            }
+        }
     }
 
     /**
