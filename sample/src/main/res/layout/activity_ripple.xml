@@ -8,7 +8,7 @@
     tools:context=".RippleActivity">
 
     <com.fanhl.dreamground.RippleView
-        android:id="@+id/starry_sky"
+        android:id="@+id/ripple_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#9cd6bd"

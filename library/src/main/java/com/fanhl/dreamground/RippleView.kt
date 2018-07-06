@@ -1,10 +1,10 @@
 package com.fanhl.dreamground
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.PorterDuff
 import android.graphics.SurfaceTexture
-import android.os.Handler
-import android.os.Message
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
@@ -17,52 +17,95 @@ import android.view.TextureView
  * @author fanhl
  */
 class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
-    private val paint by lazy {
-        Paint()
-    }
+    private var renderThread: RenderThread? = null
 
-    private var mSurface: Surface? = null
+    var xx = 0.0f
+    var yy = 0.0f
+    var speedX = 5.0f
+    var speedY = 3.0f
 
-    private val mHandler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            mCount++
-            val canvas = mSurface?.lockCanvas(null)
-            canvas?.drawColor(-0x1)//擦除原来的内容
-            canvas?.drawText("Hello World$mCount", (width shr 1).toFloat(), (height shr 1).toFloat(), paint)
-            mSurface?.unlockCanvasAndPost(canvas)
-            sendEmptyMessageDelayed(0x0001, DELAY)
-        }
-    }
-
-    private var mCount: Int = 0
+    val paint = Paint()
 
     init {
+        paint.color = -0xff0100
 
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-        mSurface = Surface(surface)
-        mHandler.sendEmptyMessageDelayed(0x0001, DELAY)
+        renderThread = RenderThread(surface ?: return, ::updateSurface)
+        renderThread?.start()
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        renderThread?.stopRendering()
+        renderThread = null
+        return true
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun run() {
+    /**
+     * 刷新Surface
+     */
+    private fun updateSurface(surface: Surface) {
+        val canvas = surface.lockCanvas(null)
+        try {
+            if (canvas != null) {
+                updateCanvas(canvas)
+            }
+        } finally {
+            surface.unlockCanvasAndPost(canvas)
+        }
+    }
 
+    /**
+     * 刷新Canvas
+     */
+    private fun updateCanvas(canvas: Canvas) {
+        canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
+        canvas.drawRect(xx, yy, xx + 20.0f, yy + 20.0f, paint)
+
+        if (xx + 20.0f + speedX >= canvas.width || xx + speedX <= 0.0f) {
+            speedX = -speedX
+        }
+        if (yy + 20.0f + speedY >= canvas.height || yy + speedY <= 0.0f) {
+            speedY = -speedY
+        }
+
+        xx += speedX
+        xx += speedY
     }
 
     companion object {
-        private val DELAY: Long = 1000
+        private const val REFERSH_INTERVAL = 20L
+    }
 
+    /**
+     * 单独的绘制线程
+     */
+    internal class RenderThread(surfaceTexture: SurfaceTexture, private val updateSurface: (Surface) -> Unit) : Thread() {
+        private val surface = Surface(surfaceTexture)
+
+        @Volatile
+        private var running = true
+
+        override fun run() {
+            while (running && !Thread.interrupted()) {
+                updateSurface(surface)
+                try {
+                    sleep(REFERSH_INTERVAL)
+                } catch (e: InterruptedException) {
+                }
+            }
+        }
+
+        fun stopRendering() {
+            interrupt()
+            running = false
+        }
     }
 }
