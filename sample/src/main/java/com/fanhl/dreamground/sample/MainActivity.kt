@@ -10,7 +10,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btn_starry_sky.setOnClickListener { StarrySkyActivity.launch(this@MainActivity) }
         btn_ripple.setOnClickListener { RippleActivity.launch(this@MainActivity) }
     }
 }
