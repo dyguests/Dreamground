@@ -5,5 +5,11 @@
             <enum name="ripple" value="0" />
             <enum name="drop" value="1" />
         </attr>
+        <attr name="rippleColor" format="color" />
+        <attr name="rippleRadius" format="dimension" />
+        <attr name="rippleRadiusFluctuation" format="float" />
+        <attr name="rippleLifetime" format="integer" />
+        <attr name="rippleIncubateInterval" format="integer" />
+        <attr name="rippleIncubateIntervalFluctuation" format="float" />
     </declare-styleable>
 </resources>
