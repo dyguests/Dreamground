@@ -10,6 +10,8 @@ import android.support.v4.util.Pools
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.Interpolator
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -26,6 +28,11 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private val paint = Paint()
 
     private val random = Random()
+
+    /** ripple半径的插值器 */
+    var rippleRadiusInterpolator: Interpolator
+    /** 透明度插值器 */
+    var rippleAlphaInterpolator: Interpolator
 
     /** 缓存所有ripple */
     private val ripples = ArrayList<Trace>()
@@ -86,6 +93,18 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         paint.color = rippleColor
 
+        //根据不同的ripple类型，显示不同的效果
+        when (rippleType) {
+            1 -> {
+                rippleRadiusInterpolator = AccelerateInterpolator()
+                rippleAlphaInterpolator = AccelerateInterpolator()
+            }
+            else -> {
+                rippleRadiusInterpolator = AccelerateInterpolator()
+                rippleAlphaInterpolator = AccelerateInterpolator()
+            }
+        }
+
         surfaceTextureListener = object : SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
                 renderThread = RenderThread(surface ?: return, ::updateSurface)
@@ -141,12 +160,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         ripples.forEach {
             if (currentTimeMillis - it.birth <= rippleLifetime) {
                 // draw ripple
-                canvas.drawCircle(
-                        it.x,
-                        it.y,
-                        100f,
-                        paint
-                )
+                drawRipple(canvas, it, currentTimeMillis)
             } else {
                 removeRipples.add(it)
             }
@@ -157,6 +171,22 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             releaseTrace(it)
         }
         removeRipples.clear()
+    }
+
+    /**
+     * 绘制单个ripple
+     */
+    private fun drawRipple(canvas: Canvas, it: Trace, currentTimeMillis: Long) {
+        val progress = (currentTimeMillis - it.birth).toFloat() / rippleLifetime
+
+
+
+        canvas.drawCircle(
+                it.x,
+                it.y,
+                100f,
+                paint
+        )
     }
 
     companion object {
