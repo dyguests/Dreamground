@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<style name="Widget_Dreamground_StarrySkyView">-->
-    <!--<item name="starryDensity">0.0001</item>-->
-    <!--<item name="starrySize">1dp</item>-->
-    <!--<item name="starryAlpha">0.5</item>-->
-    <!--</style>-->
+
+    <style name="Widget_Dreamground_RippleView">
+        <item name="bgColor">#ffffff</item>
+        <item name="rippleType">ripple</item>
+        <item name="rippleColor">#5cffb8e5</item>
+        <item name="rippleRadius">50dp</item>
+        <item name="rippleRadiusFluctuation">0.2</item>
+        <item name="rippleLifetime">5000</item>
+        <item name="rippleIncubateInterval">200</item>
+        <item name="rippleIncubateIntervalFluctuation">0.2</item>
+    </style>
 </resources>

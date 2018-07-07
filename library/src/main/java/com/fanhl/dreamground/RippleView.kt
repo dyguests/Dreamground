@@ -40,9 +40,9 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     // ------------------------------------------ Input ------------------------------------------
 
-    private val refreshInterval: Long
+    private var refreshInterval: Long
 
-    private val backgroundColor: Int
+    private var bgColor: Int
 
     private var rippleType: Int
     private var rippleColor: Int
@@ -83,7 +83,10 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     init {
         refreshInterval = REFRESH_INTERVAL_DEFAULT
 
-        backgroundColor = Color.WHITE
+        val resources = context.resources
+        val a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, R.style.Widget_Dreamground_RippleView)
+
+        bgColor = Color.WHITE
 
         rippleType = 0
         rippleColor = -0xff0100
@@ -92,6 +95,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         rippleLifetime = 2000L
         rippleIncubateInterval = 200L
         rippleIncubateIntervalFluctuation = .5f
+
+        a.recycle()
 
         //根据不同的ripple类型，显示不同的效果
         when (rippleType) {
@@ -144,7 +149,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      */
     private fun updateCanvas(canvas: Canvas) {
         // clear
-        canvas.drawColor(backgroundColor)
+        canvas.drawColor(bgColor)
 
         // draw ripples
 

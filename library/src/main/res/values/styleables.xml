@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RippleView">
+        <attr name="bgColor" format="color" />
         <attr name="rippleType" format="enum">
             <enum name="ripple" value="0" />
             <enum name="drop" value="1" />
