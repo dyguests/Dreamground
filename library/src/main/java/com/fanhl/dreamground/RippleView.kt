@@ -1,10 +1,9 @@
 package com.fanhl.dreamground
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.SurfaceTexture
+import android.graphics.*
+import android.support.annotation.FloatRange
+import android.support.v4.util.Pools
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
@@ -25,16 +24,32 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private val backgroundColor: Int
 
+    private var rippleColor = -0xff0100
 
-    var xx = 0.0f
-    var yy = 0.0f
-    var speedX = 5.0f
-    var speedY = 3.0f
+    private var rippleRadius: Float
+    /** 设置rippleRadius可以波动的范围 */
+    @FloatRange(from = 0.0, to = 1.0)
+    private var rippleRadiusFluctuation: Float = 0f
+        set(value) {
+            field = when {
+                value < 0.0 -> 0f
+                value > 1.0 -> 1f
+                else -> value
+            }
+        }
+
+    // ------------------------------------------ Operation ------------------------------------------
+
 
     init {
-        paint.color = -0xff0100
-
         backgroundColor = Color.WHITE
+
+        paint.color = rippleColor
+
+
+        rippleRadius = 100f
+        rippleRadiusFluctuation = .2f
+
 
         surfaceTextureListener = object : SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
@@ -74,25 +89,18 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 刷新Canvas
      */
     private fun updateCanvas(canvas: Canvas) {
+        // clear
         canvas.drawColor(backgroundColor)
-        canvas.drawRect(xx, yy, xx + 20.0f, yy + 20.0f, paint)
 
-        if (xx + 20.0f + speedX >= canvas.width || xx + speedX <= 0.0f) {
-            speedX = -speedX
-        }
-        if (yy + 20.0f + speedY >= canvas.height || yy + speedY <= 0.0f) {
-            speedY = -speedY
-        }
-
-        xx += speedX
-        yy += speedY
-
+        // draw ripples
         canvas.drawCircle(100f, 100f, 100f, paint)
     }
 
     companion object {
         /**刷新间隔*/
-        private const val REFRESH_INTERVAL = 20L
+        private const val REFRESH_INTERVAL_DEFAULT = 20L
+
+        private val pointPool = Pools.SynchronizedPool<PointF>(24)
     }
 
     /**
@@ -108,7 +116,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             while (running && !Thread.interrupted()) {
                 updateSurface(surface)
                 try {
-                    sleep(REFRESH_INTERVAL)
+                    sleep(REFRESH_INTERVAL_DEFAULT)
                 } catch (e: InterruptedException) {
                 }
             }
