@@ -2,8 +2,8 @@
 <resources>
     <declare-styleable name="RippleView">
         <attr name="rippleType" format="enum">
-            <enum name="ripple">0</enum>
-            <enum name="drop">1</enum>
+            <enum name="ripple" value="0" />
+            <enum name="drop" value="1" />
         </attr>
     </declare-styleable>
 </resources>

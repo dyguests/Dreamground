@@ -12,7 +12,6 @@ import android.view.Surface
 import android.view.TextureView
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Interpolator
-import android.view.animation.LinearInterpolator
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -97,12 +96,12 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         //根据不同的ripple类型，显示不同的效果
         when (rippleType) {
             1 -> {
-                rippleRadiusInterpolator = AccelerateInterpolator()
-                rippleAlphaInterpolator = AccelerateInterpolator()
+                rippleRadiusInterpolator = DropRadiusInterpolator()
+                rippleAlphaInterpolator = DropAlphaInterpolator()
             }
-            else -> {
-                rippleRadiusInterpolator = LinearInterpolator()
-                rippleAlphaInterpolator = LinearInterpolator()
+            else /*0*/ -> {
+                rippleRadiusInterpolator = RippleRadiusInterpolator()
+                rippleAlphaInterpolator = RippleAlphaInterpolator()
             }
         }
 
@@ -260,6 +259,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 痕迹
      *
      * 用来记录一个Ripple的相关参数
+     *
      * @param birth 诞生时间
      */
     private data class Trace(
@@ -271,6 +271,66 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             x = 0f
             y = 0f
             birth = 0L
+        }
+    }
+
+    /**
+     * 水滴半径
+     *
+     * see [https://www.desmos.com/calculator/hzagww2dyv]
+     */
+    class RippleRadiusInterpolator : Interpolator {
+        private val a = -12.0004f
+        private val b = 26.5141f
+        private val c = -19.4514f
+        private val d = 7.92571f
+        private val f = 0f
+
+        override fun getInterpolation(input: Float): Float {
+            return a * input * input * input * input + b * input * input * input + c * input * input + d * input + f
+        }
+    }
+
+    /** 水滴透明度 */
+    class RippleAlphaInterpolator : Interpolator {
+        private val a = -11.8164f
+        private val b = 30.828f
+        private val c = -28.244f
+        private val d = 9.23137f
+        private val f = 0f
+
+        override fun getInterpolation(input: Float): Float {
+            return a * input * input * input * input + b * input * input * input + c * input * input + d * input + f
+        }
+    }
+
+    /**
+     * 水滴半径
+     *
+     * see [https://www.desmos.com/calculator/hzagww2dyv]
+     */
+    class DropRadiusInterpolator : Interpolator {
+        private val a = -8.013f
+        private val b = 19.9082f
+        private val c = -17.699f
+        private val d = 7.80757f
+        private val f = 0f
+
+        override fun getInterpolation(input: Float): Float {
+            return a * input * input * input * input + b * input * input * input + c * input * input + d * input + f
+        }
+    }
+
+    /** 水滴透明度 */
+    class DropAlphaInterpolator : Interpolator {
+        private val a = -11.8164f
+        private val b = 30.828f
+        private val c = -28.244f
+        private val d = 9.23137f
+        private val f = 0f
+
+        override fun getInterpolation(input: Float): Float {
+            return a * input * input * input * input + b * input * input * input + c * input * input + d * input + f
         }
     }
 }
