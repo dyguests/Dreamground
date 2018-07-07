@@ -65,6 +65,9 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         }
     // ------------------------------------------ Operation ------------------------------------------
 
+    /** 临时的用来存放要移除的ripple的列表 */
+    private val removeRipples = ArrayList<Trace>()
+
     /** 上次孵化的时间 */
     private var lastIncubateTime = 0L
 
@@ -135,45 +138,25 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             })
         }
 
-        ripples.iterator().forEach {
-            if (currentTimeMillis - it.birth > rippleLifetime) {
-                try {
-                    ripples.remove(it)
-                } finally {
-                    releaseTrace(it)
-                }
+        ripples.forEach {
+            if (currentTimeMillis - it.birth <= rippleLifetime) {
+                // draw ripple
+                canvas.drawCircle(
+                        it.x,
+                        it.y,
+                        100f,
+                        paint
+                )
+            } else {
+                removeRipples.add(it)
             }
         }
 
-        ripples.forEach {
-            // draw ripple
-            canvas.drawCircle(
-                    it.x,
-                    it.y,
-                    100f,
-                    paint
-            )
+        ripples.removeAll(removeRipples)
+        removeRipples.forEach {
+            releaseTrace(it)
         }
-
-    }
-
-    private fun acquireTrace(): Trace {
-        return pointPool.acquire()
-                ?.apply {
-                    x = 0f
-                    y = 0f
-                    birth = System.currentTimeMillis()
-                }
-                ?: Trace(
-                        0f,
-                        0f,
-                        System.currentTimeMillis()
-                )
-    }
-
-    private fun releaseTrace(trace: Trace) {
-        trace.clear()
-        pointPool.release(trace)
+        removeRipples.clear()
     }
 
     companion object {
@@ -181,6 +164,25 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         private const val REFRESH_INTERVAL_DEFAULT = 20L
 
         private val pointPool = Pools.SynchronizedPool<Trace>(24)
+
+        private fun acquireTrace(): Trace {
+            return pointPool.acquire()
+                    ?.apply {
+                        x = 0f
+                        y = 0f
+                        birth = System.currentTimeMillis()
+                    }
+                    ?: Trace(
+                            0f,
+                            0f,
+                            System.currentTimeMillis()
+                    )
+        }
+
+        private fun releaseTrace(trace: Trace) {
+            trace.clear()
+            pointPool.release(trace)
+        }
     }
 
     /**
