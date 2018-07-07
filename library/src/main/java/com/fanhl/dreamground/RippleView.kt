@@ -65,6 +65,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         }
     // ------------------------------------------ Operation ------------------------------------------
 
+    /** 上次孵化的时间 */
+    private var lastIncubateTime = 0L
 
     init {
         refreshInterval = REFRESH_INTERVAL_DEFAULT
@@ -124,16 +126,23 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         // draw ripples
 
-        val trace = acquireTrace()
-        try {
-            canvas.drawCircle(
-                    trace.x,
-                    trace.y,
-                    100f,
-                    paint
-            )
-        } finally {
-            releaseTrace(trace)
+        val currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - lastIncubateTime >= rippleIncubateInterval) {
+            lastIncubateTime = currentTimeMillis
+            ripples.add(acquireTrace().apply {
+                x = random.nextFloat() * canvas.width
+                y = random.nextFloat() * canvas.height
+            })
+        }
+
+        ripples.iterator().forEach {
+            if (currentTimeMillis - it.birth > rippleLifetime) {
+                try {
+                    ripples.remove(it)
+                } finally {
+                    releaseTrace(it)
+                }
+            }
         }
 
         ripples.forEach {
