@@ -19,15 +19,22 @@ import android.view.TextureView
 class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr) {
     private var renderThread: RenderThread? = null
 
+    private val paint = Paint()
+
+    // ------------------------------------------ Input ------------------------------------------
+
+    private val backgroundColor: Int
+
+
     var xx = 0.0f
     var yy = 0.0f
     var speedX = 5.0f
     var speedY = 3.0f
 
-    val paint = Paint()
-
     init {
         paint.color = -0xff0100
+
+        backgroundColor = Color.WHITE
 
         surfaceTextureListener = object : SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
@@ -67,7 +74,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * 刷新Canvas
      */
     private fun updateCanvas(canvas: Canvas) {
-        canvas.drawColor(Color.WHITE)
+        canvas.drawColor(backgroundColor)
         canvas.drawRect(xx, yy, xx + 20.0f, yy + 20.0f, paint)
 
         if (xx + 20.0f + speedX >= canvas.width || xx + speedX <= 0.0f) {
@@ -79,6 +86,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         xx += speedX
         yy += speedY
+
+        canvas.drawCircle(100f, 100f, 100f, paint)
     }
 
     companion object {
