@@ -12,6 +12,7 @@ import android.view.Surface
 import android.view.TextureView
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -91,8 +92,6 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         rippleIncubateInterval = 200L
         rippleIncubateIntervalFluctuation = .5f
 
-        paint.color = rippleColor
-
         //根据不同的ripple类型，显示不同的效果
         when (rippleType) {
             1 -> {
@@ -100,8 +99,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
                 rippleAlphaInterpolator = AccelerateInterpolator()
             }
             else -> {
-                rippleRadiusInterpolator = AccelerateInterpolator()
-                rippleAlphaInterpolator = AccelerateInterpolator()
+                rippleRadiusInterpolator = LinearInterpolator()
+                rippleAlphaInterpolator = LinearInterpolator()
             }
         }
 
@@ -179,14 +178,29 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private fun drawRipple(canvas: Canvas, it: Trace, currentTimeMillis: Long) {
         val progress = (currentTimeMillis - it.birth).toFloat() / rippleLifetime
 
-
+        val radius = rippleRadius * rippleRadiusInterpolator.getInterpolation(progress)
+        paint.color = computeColorProduct(rippleColor, rippleAlphaInterpolator.getInterpolation(progress))
 
         canvas.drawCircle(
                 it.x,
                 it.y,
-                100f,
+                radius,
                 paint
         )
+    }
+
+    /**
+     * 计算颜色与透明度的乘积
+     */
+    private fun computeColorProduct(color: Int, alpha: Float): Int {
+        val lAlpha = (Color.alpha(color) * alpha).toInt().let {
+            when {
+                it > 255 -> 255
+                it < 0 -> 0
+                else -> it
+            }
+        }
+        return Color.argb(lAlpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     companion object {
