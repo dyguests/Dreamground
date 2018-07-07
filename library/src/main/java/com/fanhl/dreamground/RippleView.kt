@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * 波纹
@@ -22,12 +23,12 @@ import java.util.*
 class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr) {
     private var renderThread: RenderThread? = null
 
-
-    private val pointPool = Pools.SynchronizedPool<Trace>(24)
-
     private val paint = Paint()
 
     private val random = Random()
+
+    /** 缓存所有ripple */
+    private val ripples = ArrayList<Trace>()
 
     // ------------------------------------------ Input ------------------------------------------
 
@@ -35,8 +36,8 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private val backgroundColor: Int
 
-    private var rippleColor = -0xff0100
-
+    private var rippleType: Int
+    private var rippleColor: Int
     private var rippleRadius: Float
     /** 设置rippleRadius可以波动的范围 */
     @FloatRange(from = 0.0, to = 1.0)
@@ -48,9 +49,20 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
                 else -> value
             }
         }
-
+    /** ripple寿命 */
     private var rippleLifetime: Long
-
+    /** 孵化间隔（每隔多久生成一个新的ripple） */
+    private var rippleIncubateInterval: Long
+    /** 孵化间隔的波动范围 */
+    @FloatRange(from = 0.0, to = 1.0)
+    private var rippleIncubateIntervalFluctuation: Float = 0F
+        set(value) {
+            field = when {
+                value < 0.0 -> 0f
+                value > 1.0 -> 1f
+                else -> value
+            }
+        }
     // ------------------------------------------ Operation ------------------------------------------
 
 
@@ -59,12 +71,15 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         backgroundColor = Color.WHITE
 
-        paint.color = rippleColor
-
+        rippleType = 0
+        rippleColor = -0xff0100
         rippleRadius = 100f
         rippleRadiusFluctuation = .2f
         rippleLifetime = 2000L
+        rippleIncubateInterval = 200L
+        rippleIncubateIntervalFluctuation = .5f
 
+        paint.color = rippleColor
 
         surfaceTextureListener = object : SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
@@ -120,6 +135,17 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         } finally {
             releaseTrace(trace)
         }
+
+        ripples.forEach {
+            // draw ripple
+            canvas.drawCircle(
+                    it.x,
+                    it.y,
+                    100f,
+                    paint
+            )
+        }
+
     }
 
     private fun acquireTrace(): Trace {
@@ -127,23 +153,25 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
                 ?.apply {
                     x = 0f
                     y = 0f
-                    birth = 0L
+                    birth = System.currentTimeMillis()
                 }
                 ?: Trace(
                         0f,
                         0f,
-                        0L
+                        System.currentTimeMillis()
                 )
     }
 
-    private fun releaseTrace(rect: Trace) {
-        rect.clear()
-        pointPool.release(rect)
+    private fun releaseTrace(trace: Trace) {
+        trace.clear()
+        pointPool.release(trace)
     }
 
     companion object {
         /**刷新间隔*/
         private const val REFRESH_INTERVAL_DEFAULT = 20L
+
+        private val pointPool = Pools.SynchronizedPool<Trace>(24)
     }
 
     /**
