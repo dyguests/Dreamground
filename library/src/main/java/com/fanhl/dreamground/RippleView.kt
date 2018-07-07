@@ -24,6 +24,7 @@ import kotlin.collections.ArrayList
  * @author fanhl
  */
 class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr) {
+
     private var renderThread: RenderThread? = null
 
     private val paint = Paint()
@@ -71,6 +72,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
                 else -> value
             }
         }
+
     // ------------------------------------------ Operation ------------------------------------------
 
     /** 临时的用来存放要移除的ripple的列表 */
