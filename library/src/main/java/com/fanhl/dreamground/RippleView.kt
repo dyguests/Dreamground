@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.SurfaceTexture
 import android.support.annotation.FloatRange
+import android.support.v4.content.ContextCompat
 import android.support.v4.util.Pools
 import android.util.AttributeSet
 import android.view.Surface
@@ -86,14 +87,14 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         val resources = context.resources
         val a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, R.style.Widget_Dreamground_RippleView)
 
-        bgColor = Color.WHITE
+        bgColor = a.getColor(R.styleable.RippleView_bgColor, ContextCompat.getColor(context, R.color.bg_color_default))
 
         rippleType = 0
-        rippleColor = -0xff0100
+        rippleColor = a.getColor(R.styleable.RippleView_rippleColor, ContextCompat.getColor(context, R.color.ripple_color_default))
         rippleRadius = 100f
         rippleRadiusFluctuation = .2f
-        rippleLifetime = 2000L
-        rippleIncubateInterval = 200L
+        rippleLifetime = a.getInteger(R.styleable.RippleView_rippleLifetime, 5000).toLong()
+        rippleIncubateInterval = a.getInteger(R.styleable.RippleView_rippleIncubateInterval, 200).toLong()
         rippleIncubateIntervalFluctuation = .5f
 
         a.recycle()
