@@ -66,7 +66,7 @@ class SampleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     /**
      * 刷新Canvas
      */
-    private fun updateCanvas(canvas: Canvas) {
+    override fun updateCanvas(canvas: Canvas) {
         canvas.drawColor(Color.WHITE)
         canvas.drawRect(xx, yy, xx + 20.0f, yy + 20.0f, paint)
 

@@ -4,13 +4,10 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.SurfaceTexture
 import android.support.annotation.FloatRange
 import android.support.v4.content.ContextCompat
 import android.support.v4.util.Pools
 import android.util.AttributeSet
-import android.view.Surface
-import android.view.TextureView
 import android.view.animation.Interpolator
 import java.util.*
 import kotlin.collections.ArrayList
@@ -23,8 +20,6 @@ import kotlin.collections.ArrayList
  * @author fanhl
  */
 class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTextureView(context, attrs, defStyleAttr) {
-
-    private var renderThread: RenderThread? = null
 
     private val paint = Paint()
 
@@ -106,44 +101,12 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             }
         }
 
-        surfaceTextureListener = object : SurfaceTextureListener {
-            override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-                renderThread = RenderThread(surface ?: return, ::updateSurface)
-                renderThread?.start()
-            }
-
-            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-            }
-
-            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-                renderThread?.stopRendering()
-                renderThread = null
-                return true
-            }
-
-            override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
-            }
-        }
-    }
-
-    /**
-     * 刷新Surface
-     */
-    private fun updateSurface(surface: Surface) {
-        val canvas = surface.lockCanvas(null)
-        try {
-            if (canvas != null) {
-                updateCanvas(canvas)
-            }
-        } finally {
-            surface.unlockCanvasAndPost(canvas)
-        }
     }
 
     /**
      * 刷新Canvas
      */
-    private fun updateCanvas(canvas: Canvas) {
+    override fun updateCanvas(canvas: Canvas) {
         // clear
         canvas.drawColor(bgColor)
 
