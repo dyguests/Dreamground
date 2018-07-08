@@ -16,7 +16,7 @@ import android.view.TextureView
  *
  * @author fanhl
  */
-class SampleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr) {
+class SampleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTextureView(context, attrs, defStyleAttr) {
     private var renderThread: RenderThread? = null
 
     var xx = 0.0f
@@ -79,35 +79,5 @@ class SampleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         xx += speedX
         yy += speedY
-    }
-
-    companion object {
-        /**刷新间隔*/
-        private const val REFRESH_INTERVAL = 20L
-    }
-
-    /**
-     * 单独的绘制线程
-     */
-    internal class RenderThread(surfaceTexture: SurfaceTexture, private val updateSurface: (Surface) -> Unit) : Thread() {
-        private val surface = Surface(surfaceTexture)
-
-        @Volatile
-        private var running = true
-
-        override fun run() {
-            while (running && !Thread.interrupted()) {
-                updateSurface(surface)
-                try {
-                    sleep(REFRESH_INTERVAL)
-                } catch (e: InterruptedException) {
-                }
-            }
-        }
-
-        fun stopRendering() {
-            interrupt()
-            running = false
-        }
     }
 }

@@ -22,7 +22,7 @@ import kotlin.collections.ArrayList
  *
  * @author fanhl
  */
-class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : TextureView(context, attrs, defStyleAttr) {
+class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTextureView(context, attrs, defStyleAttr) {
 
     private var renderThread: RenderThread? = null
 
@@ -39,8 +39,6 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private val ripples = ArrayList<Trace>()
 
     // ------------------------------------------ Input ------------------------------------------
-
-    private var refreshInterval: Long
 
     private var bgColor: Int
 
@@ -81,8 +79,6 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private var lastIncubateTime = 0L
 
     init {
-        refreshInterval = REFRESH_INTERVAL_DEFAULT
-
         val resources = context.resources
         val a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, R.style.Widget_Dreamground_RippleView)
 
@@ -210,8 +206,6 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     companion object {
-        /**刷新间隔*/
-        private const val REFRESH_INTERVAL_DEFAULT = 20L
 
         private val pointPool = Pools.SynchronizedPool<Trace>(24)
 
@@ -232,31 +226,6 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         private fun releaseTrace(trace: Trace) {
             trace.clear()
             pointPool.release(trace)
-        }
-    }
-
-    /**
-     * 单独的绘制线程
-     */
-    internal inner class RenderThread(surfaceTexture: SurfaceTexture, private val updateSurface: (Surface) -> Unit) : Thread() {
-        private val surface = Surface(surfaceTexture)
-
-        @Volatile
-        private var running = true
-
-        override fun run() {
-            while (running && !Thread.interrupted()) {
-                updateSurface(surface)
-                try {
-                    sleep(refreshInterval)
-                } catch (e: InterruptedException) {
-                }
-            }
-        }
-
-        fun stopRendering() {
-            interrupt()
-            running = false
         }
     }
 
