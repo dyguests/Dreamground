@@ -42,7 +42,11 @@ abstract class BaseTextureView @JvmOverloads constructor(context: Context, attrs
                 updateCanvas(canvas)
             }
         } finally {
-            surface.unlockCanvasAndPost(canvas)
+            try {
+                surface.unlockCanvasAndPost(canvas)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
