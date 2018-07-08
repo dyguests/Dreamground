@@ -1,8 +1,29 @@
 # Dreamground
 
+[![](https://jitpack.io/v/dyguests/Dreamground.svg)](https://jitpack.io/#dyguests/Dreamground)
+
 Dreamground.一些动态的背景自定义控件。
 
 <img src="./graphics/ripple.gif" width="40%"/>
+
+# Import
+
+###### Step 1. Add the JitPack repository to your build file
+
+Add it in your root build.gradle at the end of repositories:
+
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+###### Step 2. Add the dependency
+
+	dependencies {
+	        implementation 'com.github.dyguests:Dreamground:x.y.z'
+	}
 
 # Usage
 
