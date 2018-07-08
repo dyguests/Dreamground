@@ -2,7 +2,8 @@
 
 Dreamground.一些动态的背景自定义控件。
 
-<img src="/graphics/ripple.gif"/>
+<img src="/graphics/ripple.gif" width="200" />
+
 
 # Usage
 
