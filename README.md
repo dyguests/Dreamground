@@ -2,7 +2,7 @@
 
 Dreamground.一些动态的背景自定义控件。
 
-![](/graphics/ripple.gif){:height="50%" width="50%"}
+![](/graphics/ripple.gif | width=48)
 
 # Usage
 
