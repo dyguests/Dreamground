@@ -11,7 +11,6 @@ import android.support.v4.util.Pools
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.Interpolator
 import java.util.*
 import kotlin.collections.ArrayList
@@ -89,13 +88,13 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         bgColor = a.getColor(R.styleable.RippleView_bgColor, ContextCompat.getColor(context, R.color.bg_color_default))
 
-        rippleType = 0
+        rippleType = a.getType(R.styleable.RippleView_rippleType)
         rippleColor = a.getColor(R.styleable.RippleView_rippleColor, ContextCompat.getColor(context, R.color.ripple_color_default))
-        rippleRadius = 100f
-        rippleRadiusFluctuation = .2f
+        rippleRadius = a.getDimension(R.styleable.RippleView_rippleRadius, resources.getDimension(R.dimen.ripple_radius_default))
+        rippleRadiusFluctuation = a.getFloat(R.styleable.RippleView_rippleRadiusFluctuation, 0.2f)
         rippleLifetime = a.getInteger(R.styleable.RippleView_rippleLifetime, 5000).toLong()
         rippleIncubateInterval = a.getInteger(R.styleable.RippleView_rippleIncubateInterval, 200).toLong()
-        rippleIncubateIntervalFluctuation = .5f
+        rippleIncubateIntervalFluctuation = a.getFloat(R.styleable.RippleView_rippleIncubateIntervalFluctuation, 0.5f)
 
         a.recycle()
 
