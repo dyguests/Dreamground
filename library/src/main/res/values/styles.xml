@@ -8,7 +8,7 @@
         <item name="rippleRadius">@dimen/ripple_radius_default</item>
         <item name="rippleRadiusFluctuation">0.2</item>
         <item name="rippleLifetime">5000</item>
-        <item name="rippleIncubateInterval">100</item>
+        <item name="rippleIncubateInterval">500</item>
         <item name="rippleIncubateIntervalFluctuation">0.2</item>
     </style>
 </resources>

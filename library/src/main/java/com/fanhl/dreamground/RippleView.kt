@@ -93,7 +93,7 @@ class RippleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         rippleRadius = a.getDimension(R.styleable.RippleView_rippleRadius, resources.getDimension(R.dimen.ripple_radius_default))
         rippleRadiusFluctuation = a.getFloat(R.styleable.RippleView_rippleRadiusFluctuation, 0.2f)
         rippleLifetime = a.getInteger(R.styleable.RippleView_rippleLifetime, 5000).toLong()
-        rippleIncubateInterval = a.getInteger(R.styleable.RippleView_rippleIncubateInterval, 200).toLong()
+        rippleIncubateInterval = a.getInteger(R.styleable.RippleView_rippleIncubateInterval, 500).toLong()
         rippleIncubateIntervalFluctuation = a.getFloat(R.styleable.RippleView_rippleIncubateIntervalFluctuation, 0.5f)
 
         a.recycle()
