@@ -15,9 +15,9 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     // ------------------------------------------ Input ------------------------------------------
 
-    /** 列面数 （顶点数=面数+1） */
+    /** 列顶点数 （顶点数=面数+1） */
     private var columns: Int? = null
-    /** 行面数 （顶点数=面数+1） */
+    /** 行顶点数 （顶点数=面数+1） */
     private var rows: Int? = null
     /** 面大小 （根据面的大小来计算出行列数） */
     private var cellSize: Float? = null
@@ -26,6 +26,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     private var backLightColor: Int
 
     // ------------------------------------------ Operation ------------------------------------------
+
 
     init {
 
@@ -45,7 +46,17 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     }
 
     override fun updateCanvas(canvas: Canvas) {
+        initCanvas(canvas)
 
+        crestss.forEachIndexed { x, crests ->
+            crests.forEachIndexed { y, crest ->
+
+                canvas.drawCircle()
+            }
+        }
+    }
+
+    private fun initCanvas(canvas: Canvas) {
     }
 
     /**
