@@ -192,8 +192,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
             return Vector3(
                     x = this.x + other.x,
                     y = this.y + other.y,
-                    z = this.z + other.z,
-                    )
+                    z = this.z + other.z
+            )
         }
 
         fun unitVector(): Vector3 {
