@@ -32,6 +32,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     // ------------------------------------------ Operation ------------------------------------------
 
+    var itemWidth: Float = 0.0f
+    var itemHeight: Float = 0.0f
 
     init {
 
@@ -59,14 +61,11 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         canvas.drawColor(Color.WHITE)
 
-        val itemWidth = width.toFloat() / (columns!! - 1)
-        val itemHeight = height.toFloat() / (rows!! - 1)
-
         crestss.forEachIndexed { column, crests ->
             crests.forEachIndexed { row, crest ->
-                val x0 = (column + crest.x) * itemWidth - itemWidth / 2
-                val y0 = (row + crest.y) * itemHeight - itemHeight / 2
+                val (x0, y0, z0) = parseCoordinate(column, crest, itemWidth, row, itemHeight)
 
+                val color = z0
                 paint.color = backLightColor
 
 
@@ -78,12 +77,27 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 }
 
 
-                val a = 1
             }
         }
     }
 
     private fun initCanvas(canvas: Canvas) {
+        if (itemWidth != 0f) {
+            return
+        }
+
+        itemWidth = width.toFloat() / (columns!! - 1)
+        itemHeight = height.toFloat() / (rows!! - 1)
+    }
+
+    /**
+     * 取得对应点位的3d坐标
+     */
+    private fun parseCoordinate(column: Int, crest: Crest, itemWidth: Float, row: Int, itemHeight: Float): Triple<Float, Float, Float> {
+        val x0 = (column + crest.x) * itemWidth - itemWidth / 2
+        val y0 = (row + crest.y) * itemHeight - itemHeight / 2
+        val z0 = crest.z * (itemWidth + itemHeight) / 2
+        return Triple(x0, y0, z0)
     }
 
     /**
