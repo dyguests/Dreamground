@@ -70,7 +70,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
 //        lightAngle = 135
 
-        transverseWave = 0.2f
+        transverseWave = .5f
         longitudinalWave = 1f
 
         a.recycle()
