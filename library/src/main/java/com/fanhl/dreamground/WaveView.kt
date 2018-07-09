@@ -5,8 +5,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import android.support.annotation.FloatRange
 import android.util.AttributeSet
+import com.fanhl.dreamground.util.ColorUtils
+import java.util.*
 
 /**
  * 类似QQ启动页上的波浪效果那种
@@ -16,10 +17,14 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
      * 所有浪尖
      *
      * 注意：这里存放的是相对于初始值的偏移点
+     *
+     * 注2  x,y,z in (-0.5f,0.5f)
      */
     private val crestss: Array<Array<Vector3>>
 
     private val paint = Paint()
+
+    private val random = Random()
 
     // ------------------------------------------ Input ------------------------------------------
 
@@ -59,7 +64,9 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         crestss = Array(columns!!) {
             Array(rows!!) {
-                Vector3()
+                Vector3(
+                        z = random.nextFloat() - 0.5f
+                )
             }
         }
     }
@@ -82,7 +89,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
                 val normalVector = getNormalVector(coord00, coord10, coord01, coord11)
 
-                paint.color = backLightColor
+                paint.color = computePlaneColor(normalVector)
 
                 path.moveTo(coord00.x, coord00.y)
                 path.lineTo(coord10.x, coord00.y)
@@ -118,8 +125,27 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     /**
      * 根据面上的点，返回法线向量
      */
-    private fun getNormalVector(v1: WaveView.Vector3, v2: WaveView.Vector3, v3: WaveView.Vector3, v4: WaveView.Vector3): WaveView.Vector3 {
-        return Vector3()
+    private fun getNormalVector(p1: WaveView.Vector3, p2: WaveView.Vector3, p3: WaveView.Vector3, v4: WaveView.Vector3): WaveView.Vector3 {
+        val a = ((p2.y - p1.y) * (p3.z - p1.z) - (p2.z - p1.z) * (p3.y - p1.y))
+        val b = ((p2.z - p1.z) * (p3.x - p1.x) - (p2.x - p1.x) * (p3.z - p1.z))
+        val c = ((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x))
+
+        // FIXME: 2018/7/9 fanhl 这里只求了3个点，之后改成4个点
+
+        return Vector3(a, b, c)
+    }
+
+    /**
+     * 根据法向量方向计算出颜色
+     */
+    private fun computePlaneColor(normalVector: Vector3): Int {
+        val percent1 = normalVector.x + 0.5f
+        val percent = when {
+            percent1 > 1f -> 1f
+            percent1 < 0f -> 0f
+            else -> percent1
+        }
+        return ColorUtils.getColorGradient(foreLightColor, backLightColor, percent)
     }
 
     data class Vector3(
