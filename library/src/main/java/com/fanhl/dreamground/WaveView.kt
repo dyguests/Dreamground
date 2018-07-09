@@ -27,6 +27,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     private var foreLightColor: Int
     private var backLightColor: Int
+    /** 光线角度 */
+    private var lightAngle: Int
 
     // ------------------------------------------ Operation ------------------------------------------
 
@@ -40,6 +42,10 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         foreLightColor = Color.WHITE
         backLightColor = Color.BLACK
+
+        lightAngle = 135
+
+
 
         crestss = Array(columns!!) {
             Array(rows!!) {
@@ -58,14 +64,21 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         crestss.forEachIndexed { column, crests ->
             crests.forEachIndexed { row, crest ->
-                val x = (column + crest.x) * itemWidth - itemWidth / 2
-                val y = (row + crest.y) * itemHeight - itemHeight / 2
+                val x0 = (column + crest.x) * itemWidth - itemWidth / 2
+                val y0 = (row + crest.y) * itemHeight - itemHeight / 2
 
                 paint.color = backLightColor
 
 
                 // 临时顶点
-                canvas.drawCircle(x, y, 10f, paint)
+                canvas.drawCircle(x0, y0, 10f, paint)
+
+                if (column >= columns!! - 1 || row >= rows!! - 1) {
+                    return
+                }
+
+
+                val a = 1
             }
         }
     }
