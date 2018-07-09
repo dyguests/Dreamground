@@ -142,14 +142,26 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     /**
      * 根据面上的点，返回法线向量
      */
-    private fun getNormalVector(p1: WaveView.Vector3, p2: WaveView.Vector3, p3: WaveView.Vector3, v4: WaveView.Vector3): WaveView.Vector3 {
+    private fun getNormalVector(p1: WaveView.Vector3, p2: WaveView.Vector3, p3: WaveView.Vector3, p4: WaveView.Vector3): WaveView.Vector3 {
+        val n1 = getNormalVector(p1, p2, p3)
+        val n2 = getNormalVector(p2, p3, p4)
+        val n3 = getNormalVector(p3, p4, p1)
+        val n4 = getNormalVector(p4, p1, p2)
+
+        val normal = n1 + n2 + n3 + n4
+
+        return normal.unitVector()
+    }
+
+    /**
+     * 根据面上的点，返回法线向量
+     */
+    private fun getNormalVector(p1: WaveView.Vector3, p2: WaveView.Vector3, p3: WaveView.Vector3): WaveView.Vector3 {
         val a = ((p2.y - p1.y) * (p3.z - p1.z) - (p2.z - p1.z) * (p3.y - p1.y))
         val b = ((p2.z - p1.z) * (p3.x - p1.x) - (p2.x - p1.x) * (p3.z - p1.z))
         val c = ((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x))
 
         val length = Math.sqrt((a * a + b * b + c * c).toDouble()).toFloat()
-
-        // FIXME: 2018/7/9 fanhl 这里只求了3个点，之后改成4个点
 
         return Vector3(a / length, b / length, c / length)
     }
@@ -171,5 +183,26 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
             var x: Float = 0f,
             var y: Float = 0f,
             var z: Float = 0f
-    )
+    ) {
+        fun length(): Float {
+            return Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+        }
+
+        operator fun plus(other: Vector3): Vector3 {
+            return Vector3(
+                    x = this.x + other.x,
+                    y = this.y + other.y,
+                    z = this.z + other.z,
+                    )
+        }
+
+        fun unitVector(): Vector3 {
+            val length = length()
+            return Vector3(
+                    this.x / length,
+                    this.y / length,
+                    this.z / length
+            )
+        }
+    }
 }
