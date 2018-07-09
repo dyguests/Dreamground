@@ -50,6 +50,9 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     override fun updateCanvas(canvas: Canvas) {
         initCanvas(canvas)
+
+        canvas.drawColor(Color.WHITE)
+
         val itemWidth = width.toFloat() / (columns!! - 1)
         val itemHeight = height.toFloat() / (rows!! - 1)
 
@@ -60,7 +63,9 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
                 paint.color = backLightColor
 
-                canvas.drawCircle(x, y, 100f, paint)
+
+                // 临时顶点
+                canvas.drawCircle(x, y, 10f, paint)
             }
         }
     }
