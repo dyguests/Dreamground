@@ -55,8 +55,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     init {
 
         //FIXME 这里要根据宽、高、宽高、密度来计算是实际的行列数
-        columns = 4
-        rows = 4
+        columns = 8
+        rows = 12
         cellSize = 100f
 
         foreLightColor = Color.BLUE
