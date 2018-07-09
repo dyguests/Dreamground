@@ -59,7 +59,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         rows = 4
         cellSize = 100f
 
-        foreLightColor = Color.WHITE
+        foreLightColor = Color.BLUE
         backLightColor = Color.RED
 
         lightAngle = 135
@@ -99,7 +99,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 paint.color = computePlaneColor(normalVector)
 
                 path.moveTo(coord00.x, coord00.y)
-                path.lineTo(coord10.x, coord00.y)
+                path.lineTo(coord10.x, coord10.y)
                 path.lineTo(coord11.x, coord11.y)
                 path.lineTo(coord01.x, coord01.y)
                 path.close()
