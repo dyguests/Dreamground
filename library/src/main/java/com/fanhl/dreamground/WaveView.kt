@@ -59,8 +59,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         val a = context.obtainStyledAttributes(attrs, R.styleable.WaveView, defStyleAttr, R.style.Widget_Dreamground_WaveView)
 
         //FIXME 这里要根据宽、高、宽高、密度来计算是实际的行列数
-        columns = 8
-        rows = 12
+        columns = 6
+        rows = 8
         cellSize = 100f
 
         foreLightColor = a.getColor(R.styleable.WaveView_foreLightColor, ContextCompat.getColor(context, R.color.wave_fore_light_color_default))
@@ -112,6 +112,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 canvas.drawPath(path, paint)
                 path.reset()
 
+                // test
                 paint.color = Color.BLACK
                 canvas.drawCircle(coord00.x, coord00.y, 10f, paint)
             }
