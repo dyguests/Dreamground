@@ -3,8 +3,9 @@ package com.fanhl.dreamground
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.support.annotation.FloatRange
 import android.util.AttributeSet
-import android.view.Surface
 
 /**
  * 类似QQ启动页上的波浪效果那种
@@ -12,6 +13,8 @@ import android.view.Surface
 class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTextureView(context, attrs, defStyleAttr) {
     /** 所有浪尖 */
     private val crestss: Array<Array<Crest>>
+
+    private val paint = Paint()
 
     // ------------------------------------------ Input ------------------------------------------
 
@@ -47,11 +50,17 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     override fun updateCanvas(canvas: Canvas) {
         initCanvas(canvas)
+        val itemWidth = width.toFloat() / (columns!! - 1)
+        val itemHeight = height.toFloat() / (rows!! - 1)
 
-        crestss.forEachIndexed { x, crests ->
-            crests.forEachIndexed { y, crest ->
+        crestss.forEachIndexed { column, crests ->
+            crests.forEachIndexed { row, crest ->
+                val x = (column + crest.x) * itemWidth - itemWidth / 2
+                val y = (row + crest.y) * itemHeight - itemHeight / 2
 
-                canvas.drawCircle()
+                paint.color = backLightColor
+
+                canvas.drawCircle(x, y, 100f, paint)
             }
         }
     }
@@ -65,6 +74,13 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
      * 关键点
      */
     class Crest {
-        //x,y,z 都是基于初起位置的偏移值
+        // x,y,z 都是基于初起位置的偏移值
+
+        @FloatRange(from = -0.5, to = 0.5)
+        var x: Float = 0f
+        @FloatRange(from = -0.5, to = 0.5)
+        var y: Float = 0f
+        @FloatRange(from = -0.5, to = 0.5)
+        var z: Float = 0f
     }
 }
