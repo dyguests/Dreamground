@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.support.annotation.FloatRange
 import android.util.AttributeSet
 
@@ -32,8 +33,11 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     // ------------------------------------------ Operation ------------------------------------------
 
-    var itemWidth: Float = 0.0f
-    var itemHeight: Float = 0.0f
+    private var itemWidth: Float = 0.0f
+    private var itemHeight: Float = 0.0f
+
+    /** 用来存放path数据 */
+    private val path = Path()
 
     init {
 
@@ -63,20 +67,29 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         crestss.forEachIndexed { column, crests ->
             crests.forEachIndexed { row, crest ->
-                val (x0, y0, z0) = parseCoordinate(column, crest, itemWidth, row, itemHeight)
+                val coord00 = parseCoordinate(column, row)
 
-                val color = z0
                 paint.color = backLightColor
 
 
                 // 临时顶点
-                canvas.drawCircle(x0, y0, 10f, paint)
+                canvas.drawCircle(coord00.first, coord00.second, 10f, paint)
 
                 if (column >= columns!! - 1 || row >= rows!! - 1) {
                     return
                 }
 
+                val coord10 = parseCoordinate(column + 1, row)
+                val coord01 = parseCoordinate(column, row + 1)
+                val coord11 = parseCoordinate(column + 1, row + 1)
 
+                path.moveTo(coord00.first, coord00.second)
+                path.lineTo(coord10.first, coord00.second)
+                path.lineTo(coord11.first, coord11.second)
+                path.lineTo(coord01.first, coord01.second)
+                path.close()
+//                canvas.drawPath(path, paint)
+                path.reset()
             }
         }
     }
@@ -86,14 +99,15 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
             return
         }
 
-        itemWidth = width.toFloat() / (columns!! - 1)
-        itemHeight = height.toFloat() / (rows!! - 1)
+        itemWidth = canvas.width.toFloat() / (columns!! - 1)
+        itemHeight = canvas.height.toFloat() / (rows!! - 1)
     }
 
     /**
      * 取得对应点位的3d坐标
      */
-    private fun parseCoordinate(column: Int, crest: Crest, itemWidth: Float, row: Int, itemHeight: Float): Triple<Float, Float, Float> {
+    private fun parseCoordinate(column: Int, row: Int): Triple<Float, Float, Float> {
+        val crest = crestss[column][row]
         val x0 = (column + crest.x) * itemWidth - itemWidth / 2
         val y0 = (row + crest.y) * itemHeight - itemHeight / 2
         val z0 = crest.z * (itemWidth + itemHeight) / 2
