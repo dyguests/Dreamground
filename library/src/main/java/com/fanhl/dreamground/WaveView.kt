@@ -143,10 +143,10 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
      * 根据面上的点，返回法线向量
      */
     private fun getNormalVector(p1: WaveView.Vector3, p2: WaveView.Vector3, p3: WaveView.Vector3, p4: WaveView.Vector3): WaveView.Vector3 {
-        val n1 = getNormalVector(p1, p2, p3)
-        val n2 = getNormalVector(p2, p3, p4)
-        val n3 = getNormalVector(p3, p4, p1)
-        val n4 = getNormalVector(p4, p1, p2)
+        val n1 = getNormalVector(p1, p2, p4)
+        val n2 = getNormalVector(p2, p4, p3)
+        val n3 = getNormalVector(p4, p3, p1)
+        val n4 = getNormalVector(p3, p1, p2)
 
         val normal = n1 + n2 + n3 + n4
 
