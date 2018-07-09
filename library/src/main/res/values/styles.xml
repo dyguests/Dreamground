@@ -11,4 +11,9 @@
         <item name="rippleIncubateInterval">500</item>
         <item name="rippleIncubateIntervalFluctuation">0.2</item>
     </style>
+
+    <style name="Widget_Dreamground_WaveView">
+        <item name="foreLightColor">@color/wave_fore_light_color_default</item>
+        <item name="backLightColor">@color/wave_back_light_color_default</item>
+    </style>
 </resources>

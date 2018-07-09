@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import com.fanhl.dreamground.util.ColorUtils
 import java.util.*
@@ -54,18 +55,23 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     init {
 
+        val resources = context.resources
+        val a = context.obtainStyledAttributes(attrs, R.styleable.WaveView, defStyleAttr, R.style.Widget_Dreamground_WaveView)
+
         //FIXME 这里要根据宽、高、宽高、密度来计算是实际的行列数
         columns = 8
         rows = 12
         cellSize = 100f
 
-        foreLightColor = Color.BLUE
-        backLightColor = Color.RED
+        foreLightColor = a.getColor(R.styleable.WaveView_foreLightColor, ContextCompat.getColor(context, R.color.wave_fore_light_color_default))
+        backLightColor = a.getColor(R.styleable.WaveView_backLightColor, ContextCompat.getColor(context, R.color.wave_back_light_color_default))
 
         lightAngle = 135
 
         transverseWave = 0.2f
         longitudinalWave = 0.2f
+
+        a.recycle()
 
         crestss = Array(columns!!) {
             Array(rows!!) {

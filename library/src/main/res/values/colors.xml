@@ -2,4 +2,7 @@
 <resources>
     <color name="bg_color_default">#ffffff</color>
     <color name="ripple_color_default">#8affb8e5</color>
+
+    <color name="wave_fore_light_color_default">#90c7ff</color>
+    <color name="wave_back_light_color_default">#5882b4</color>
 </resources>

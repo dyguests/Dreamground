@@ -13,4 +13,8 @@
         <attr name="rippleIncubateInterval" format="integer" />
         <attr name="rippleIncubateIntervalFluctuation" format="float" />
     </declare-styleable>
+    <declare-styleable name="WaveView">
+        <attr name="foreLightColor" format="color"/>
+        <attr name="backLightColor" format="color"/>
+    </declare-styleable>
 </resources>
