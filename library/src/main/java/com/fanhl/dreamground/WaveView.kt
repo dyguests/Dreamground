@@ -38,8 +38,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     private var foreLightColor: Int
     private var backLightColor: Int
-    /** 光线角度 */
-    private var lightAngle: Int
+//    /** 光线角度 */
+//    private var lightAngle: Int
     /** 横波幅度 */
     private var transverseWave: Float
     /** 纵波幅度 */
@@ -52,6 +52,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     /** 用来存放path数据 */
     private val path = Path()
+
+    private val viewportVector = Vector3(z = 1f)
 
     init {
 
@@ -66,10 +68,10 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         foreLightColor = a.getColor(R.styleable.WaveView_foreLightColor, ContextCompat.getColor(context, R.color.wave_fore_light_color_default))
         backLightColor = a.getColor(R.styleable.WaveView_backLightColor, ContextCompat.getColor(context, R.color.wave_back_light_color_default))
 
-        lightAngle = 135
+//        lightAngle = 135
 
         transverseWave = 0.2f
-        longitudinalWave = 0.2f
+        longitudinalWave = 1f
 
         a.recycle()
 
@@ -170,7 +172,9 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
      * 根据法向量方向计算出颜色
      */
     private fun computePlaneColor(normalVector: Vector3): Int {
-        val percent1 = normalVector.x + 0.5f
+        val anglePi = viewportVector.getAngle(normalVector)
+        val angle = (anglePi / Math.PI).toFloat()
+        val percent1 = angle
         val percent = when {
             percent1 > 1f -> 1f
             percent1 < 0f -> 0f
@@ -203,6 +207,19 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                     this.y / length,
                     this.z / length
             )
+        }
+
+        private operator fun times(other: Vector3): Float {
+            return this.x * other.x + this.y * other.y + this.z * other.z
+        }
+
+        /**
+         * 取得两个向量的夹角
+         *
+         * @return [-pi,pi]
+         */
+        fun getAngle(other: Vector3): Float {
+            return Math.acos(((this * other) / length() / other.length()).toDouble()).toFloat()
         }
     }
 }
