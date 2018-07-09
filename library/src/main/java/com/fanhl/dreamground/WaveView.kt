@@ -65,6 +65,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         crestss = Array(columns!!) {
             Array(rows!!) {
                 Vector3(
+                        x = random.nextFloat() - 0.5f,
+                        y = random.nextFloat() - 0.5f,
                         z = random.nextFloat() - 0.5f
                 )
             }
@@ -130,9 +132,11 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         val b = ((p2.z - p1.z) * (p3.x - p1.x) - (p2.x - p1.x) * (p3.z - p1.z))
         val c = ((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x))
 
+        val length = Math.sqrt((a * a + b * b + c * c).toDouble()).toFloat()
+
         // FIXME: 2018/7/9 fanhl 这里只求了3个点，之后改成4个点
 
-        return Vector3(a, b, c)
+        return Vector3(a / length, b / length, c / length)
     }
 
     /**
