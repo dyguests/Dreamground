@@ -39,6 +39,10 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     private var backLightColor: Int
     /** 光线角度 */
     private var lightAngle: Int
+    /** 横波幅度 */
+    private var transverseWave: Float
+    /** 纵波幅度 */
+    private var longitudinalWave: Float
 
     // ------------------------------------------ Operation ------------------------------------------
 
@@ -60,14 +64,15 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         lightAngle = 135
 
-
+        transverseWave = 0.2f
+        longitudinalWave = 0.2f
 
         crestss = Array(columns!!) {
             Array(rows!!) {
                 Vector3(
-                        x = random.nextFloat() - 0.5f,
-                        y = random.nextFloat() - 0.5f,
-                        z = random.nextFloat() - 0.5f
+                        x = (random.nextFloat() - 0.5f) * transverseWave,
+                        y = (random.nextFloat() - 0.5f) * transverseWave,
+                        z = (random.nextFloat() - 0.5f) * longitudinalWave
                 )
             }
         }
@@ -100,6 +105,9 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 path.close()
                 canvas.drawPath(path, paint)
                 path.reset()
+
+                paint.color = Color.BLACK
+                canvas.drawCircle(coord00.x, coord00.y, 10f, paint)
             }
         }
     }
