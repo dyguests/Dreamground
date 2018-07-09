@@ -12,8 +12,12 @@ import android.util.AttributeSet
  * 类似QQ启动页上的波浪效果那种
  */
 class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTextureView(context, attrs, defStyleAttr) {
-    /** 所有浪尖 */
-    private val crestss: Array<Array<Crest>>
+    /**
+     * 所有浪尖
+     *
+     * 注意：这里存放的是相对于初始值的偏移点
+     */
+    private val crestss: Array<Array<Vector3>>
 
     private val paint = Paint()
 
@@ -55,7 +59,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         crestss = Array(columns!!) {
             Array(rows!!) {
-                Crest()
+                Vector3()
             }
         }
     }
@@ -76,12 +80,14 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
                 val coord01 = parseCoordinate(column, row + 1)
                 val coord11 = parseCoordinate(column + 1, row + 1)
 
+                val normalVector = getNormalVector(coord00, coord10, coord01, coord11)
+
                 paint.color = backLightColor
 
-                path.moveTo(coord00.first, coord00.second)
-                path.lineTo(coord10.first, coord00.second)
-                path.lineTo(coord11.first, coord11.second)
-                path.lineTo(coord01.first, coord01.second)
+                path.moveTo(coord00.x, coord00.y)
+                path.lineTo(coord10.x, coord00.y)
+                path.lineTo(coord11.x, coord11.y)
+                path.lineTo(coord01.x, coord01.y)
                 path.close()
                 canvas.drawPath(path, paint)
                 path.reset()
@@ -101,27 +107,24 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     /**
      * 取得对应点位的3d坐标
      */
-    private fun parseCoordinate(column: Int, row: Int): Triple<Float, Float, Float> {
+    private fun parseCoordinate(column: Int, row: Int): Vector3 {
         val crest = crestss[column][row]
         val x0 = (column + crest.x) * itemWidth - itemWidth / 2
         val y0 = (row + crest.y) * itemHeight - itemHeight / 2
         val z0 = crest.z * (itemWidth + itemHeight) / 2
-        return Triple(x0, y0, z0)
+        return Vector3(x0, y0, z0)
     }
 
     /**
-     * 波峰
-     *
-     * 关键点
+     * 根据面上的点，返回法线向量
      */
-    class Crest {
-        // x,y,z 都是基于初起位置的偏移值
-
-        @FloatRange(from = -0.5, to = 0.5)
-        var x: Float = 0f
-        @FloatRange(from = -0.5, to = 0.5)
-        var y: Float = 0f
-        @FloatRange(from = -0.5, to = 0.5)
-        var z: Float = 0f
+    private fun getNormalVector(v1: WaveView.Vector3, v2: WaveView.Vector3, v3: WaveView.Vector3, v4: WaveView.Vector3): WaveView.Vector3 {
+        return Vector3()
     }
+
+    data class Vector3(
+            var x: Float = 0f,
+            var y: Float = 0f,
+            var z: Float = 0f
+    )
 }
