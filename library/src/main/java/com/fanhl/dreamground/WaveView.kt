@@ -47,7 +47,7 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         cellSize = 100f
 
         foreLightColor = Color.WHITE
-        backLightColor = Color.BLACK
+        backLightColor = Color.RED
 
         lightAngle = 135
 
@@ -66,29 +66,24 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         canvas.drawColor(Color.WHITE)
 
         crestss.forEachIndexed { column, crests ->
-            crests.forEachIndexed { row, crest ->
-                val coord00 = parseCoordinate(column, row)
-
-                paint.color = backLightColor
-
-
-                // 临时顶点
-                canvas.drawCircle(coord00.first, coord00.second, 10f, paint)
-
+            crests.forEachIndexed rowLoop@{ row, crest ->
                 if (column >= columns!! - 1 || row >= rows!! - 1) {
-                    return
+                    return@rowLoop
                 }
 
+                val coord00 = parseCoordinate(column, row)
                 val coord10 = parseCoordinate(column + 1, row)
                 val coord01 = parseCoordinate(column, row + 1)
                 val coord11 = parseCoordinate(column + 1, row + 1)
+
+                paint.color = backLightColor
 
                 path.moveTo(coord00.first, coord00.second)
                 path.lineTo(coord10.first, coord00.second)
                 path.lineTo(coord11.first, coord11.second)
                 path.lineTo(coord01.first, coord01.second)
                 path.close()
-//                canvas.drawPath(path, paint)
+                canvas.drawPath(path, paint)
                 path.reset()
             }
         }
@@ -99,8 +94,8 @@ class WaveView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
             return
         }
 
-        itemWidth = canvas.width.toFloat() / (columns!! - 1)
-        itemHeight = canvas.height.toFloat() / (rows!! - 1)
+        itemWidth = canvas.width.toFloat() / (columns!! - 2)
+        itemHeight = canvas.height.toFloat() / (rows!! - 2)
     }
 
     /**
