@@ -48,3 +48,5 @@ Add it in your root build.gradle at the end of repositories:
 ## Reference
 
 1. [60.自定义View练习（五）高仿小米时钟 - 使用Camera和Matrix实现3D效果](https://blog.csdn.net/qq_31715429/article/details/54668668)
+
+2. [MonkeyMushroom/MiClockView](https://github.com/MonkeyMushroom/MiClockView)
