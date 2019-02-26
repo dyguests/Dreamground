@@ -6,7 +6,7 @@ Dreamground.一些动态的背景自定义控件。
 
 <img src="./graphics/ripple.gif" width="40%"/>
 
-# Import
+## Import
 
 ###### Step 1. Add the JitPack repository to your build file
 
@@ -25,7 +25,7 @@ Add it in your root build.gradle at the end of repositories:
 	        implementation 'com.github.dyguests:Dreamground:x.y.z'
 	}
 
-# Usage
+## Usage
 
     <declare-styleable name="RippleView">
         <attr name="bgColor" format="color" />
@@ -41,6 +41,10 @@ Add it in your root build.gradle at the end of repositories:
         <attr name="rippleIncubateIntervalFluctuation" format="float" />
     </declare-styleable>
 
-# TODO
+## TODO
 
 - [ ] onPause process.
+
+## Reference
+
+1. [60.自定义View练习（五）高仿小米时钟 - 使用Camera和Matrix实现3D效果](https://blog.csdn.net/qq_31715429/article/details/54668668)

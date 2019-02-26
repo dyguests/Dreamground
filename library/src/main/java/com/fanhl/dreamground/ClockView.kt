@@ -2,6 +2,7 @@ package com.fanhl.dreamground
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Nullable
@@ -14,5 +15,7 @@ class ClockView(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
+        canvas ?: return
+        canvas.drawColor(Color.RED)
     }
 }
