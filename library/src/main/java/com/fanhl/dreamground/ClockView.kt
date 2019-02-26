@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.SweepGradient
@@ -12,6 +13,7 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Nullable
+import java.util.*
 
 
 class ClockView(
@@ -29,9 +31,14 @@ class ClockView(
     // ---------- 内部变量 ----------
     /** 小时圆圈画笔 */
     private var mCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    /** 刻度圆弧画笔 */
     private var mScaleArcPaint = Paint()
-    private var mScaleLinePaint = Paint()
+    /** 小时的文字 */
     private var mTextPaint = TextPaint()
+    /** 秒针刻度线 */
+    private var mScaleLinePaint = Paint()
+    /** 秒针画笔 */
+    private val mSecondHandPaint = Paint()
 
     /** View的最小边半径 */
     private var mRadius: Float = 0f
@@ -49,13 +56,19 @@ class ClockView(
     /** 渐变矩阵，作用在SweepGradient */
     private val mGradientMatrix: Matrix = Matrix()
 
+    /** 时针角度 */
+    private var mHourDegree: Float = 0f
+    /** 分针角度 */
+    private var mMinuteDegree: Float = 0f
     /** 秒针角度 */
     private var mSecondDegree: Float = 0f
 
-    /** 计算用临时存放区 */
-    private var mTextRect = Rect()
-    private var mCircleRectF = RectF()
+    /* -------------- 计算用临时存放区 -------------- */
     private var mScaleArcRectF = RectF()
+    private var mCircleRectF = RectF()
+    private var mTextRect = Rect()
+    /** 秒针路径 */
+    private val mSecondHandPath = Path()
 
     init {
         mDarkColor = Color.GRAY
@@ -68,6 +81,7 @@ class ClockView(
             strokeWidth = mCircleStrokeWidth
             color = mDarkColor
         }
+        mScaleArcPaint.style = Paint.Style.STROKE
         mTextPaint.apply {
             textSize = 40f
             color = Color.WHITE
@@ -131,6 +145,7 @@ class ClockView(
 
         //绘制刻度盘
         drawScaleLine(canvas)
+        drawSecondHand(canvas)
     }
 
     /**
@@ -149,5 +164,53 @@ class ClockView(
         mSweepGradient.setLocalMatrix(mGradientMatrix)
         mScaleArcPaint.shader = mSweepGradient
         canvas.drawArc(mScaleArcRectF, 0f, 360f, false, mScaleArcPaint)
+
+        //画背景色刻度线
+        val saveCount = canvas.save()
+        for (i in 0 until 200) {
+            canvas.drawLine(
+                width / 2f,
+                mPaddingTop + mScaleLength + mTextRect.height() / 2f,
+                width / 2f,
+                mPaddingTop + 2 * mScaleLength + mTextRect.height() / 2f,
+                mScaleLinePaint
+            )
+            canvas.rotate(1.8f, width / 2f, height / 2f)
+        }
+        canvas.restoreToCount(saveCount)
+    }
+
+    /**
+     * 画秒针
+     */
+    private fun drawSecondHand(canvas: Canvas) {
+        canvas.save()
+        canvas.rotate(mSecondDegree, width / 2f, height / 2f)
+
+        mSecondHandPath.reset()
+        val offset = mPaddingTop + mTextRect.height() / 2
+        mSecondHandPath.moveTo(width / 2f, offset + 0.27f * mRadius)
+        mSecondHandPath.lineTo(width / 2f - 0.05f * mRadius, offset + 0.35f * mRadius)
+        mSecondHandPath.lineTo(width / 2f + 0.05f * mRadius, offset + 0.35f * mRadius)
+        mSecondHandPath.close()
+        mSecondHandPaint.color = mLightColor
+
+        canvas.drawPath(mSecondHandPath, mSecondHandPaint)
+        canvas.restore()
+    }
+
+    /**
+     * 获取当前 时分秒 所对应的角度
+     * 为了不让秒针走得像老式挂钟一样僵硬，需要精确到毫秒
+     */
+    private fun getTimeDegree() {
+        val calendar = Calendar.getInstance()
+        val milliSecond = calendar.get(Calendar.MILLISECOND)
+        val second = calendar.get(Calendar.SECOND) + milliSecond / 1000
+        val minute = calendar.get(Calendar.MINUTE) + second / 60
+        val hour = calendar.get(Calendar.HOUR) + minute / 60
+        mSecondDegree = second / 60f * 360
+        mMinuteDegree = minute / 60f * 360
+        mHourDegree = hour / 12f * 360
     }
 }
