@@ -39,17 +39,17 @@ class ClockView @JvmOverloads constructor(
     /** 小时圆圈画笔 */
     private var mCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     /** 刻度圆弧画笔 */
-    private var mScaleArcPaint = Paint()
+    private var mScaleArcPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     /** 小时的文字 */
     private var mTextPaint = TextPaint()
     /** 秒针刻度线 */
-    private var mScaleLinePaint = Paint()
+    private var mScaleLinePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     /** 时针画笔 */
     private val mHourHandPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     /** 分针画笔 */
     private val mMinuteHandPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     /** 秒针画笔 */
-    private val mSecondHandPaint = Paint()
+    private val mSecondHandPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     /** View的最小边半径 */
     private var mRadius: Float = 0f
