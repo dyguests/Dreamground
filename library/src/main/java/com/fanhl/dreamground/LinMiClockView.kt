@@ -21,7 +21,7 @@ import androidx.annotation.Nullable
 import java.util.*
 
 
-class MiClockView @JvmOverloads constructor(
+class LinMiClockView @JvmOverloads constructor(
     context: Context,
     @Nullable attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
