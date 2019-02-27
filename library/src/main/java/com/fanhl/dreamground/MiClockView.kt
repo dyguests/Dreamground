@@ -21,7 +21,7 @@ import androidx.annotation.Nullable
 import java.util.*
 
 
-class ClockView @JvmOverloads constructor(
+class MiClockView @JvmOverloads constructor(
     context: Context,
     @Nullable attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -314,9 +314,9 @@ class ClockView @JvmOverloads constructor(
     private fun getTimeDegree() {
         val calendar = Calendar.getInstance()
         val milliSecond = calendar.get(Calendar.MILLISECOND)
-        val second = calendar.get(Calendar.SECOND) + milliSecond / 1000
-        val minute = calendar.get(Calendar.MINUTE) + second / 60
-        val hour = calendar.get(Calendar.HOUR) + minute / 60
+        val second = calendar.get(Calendar.SECOND) + milliSecond / 1000f
+        val minute = calendar.get(Calendar.MINUTE) + second / 60f
+        val hour = calendar.get(Calendar.HOUR) + minute / 60f
         mSecondDegree = second / 60f * 360
         mMinuteDegree = minute / 60f * 360
         mHourDegree = hour / 12f * 360
