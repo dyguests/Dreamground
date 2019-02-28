@@ -632,11 +632,11 @@ class SkyClockView @JvmOverloads constructor(
             return if (t < 0.3535f)
                 bounce(t)
             else if (t < 0.7408f)
-                bounce(t - 0.54719f) + 0.7f
+                2 - (bounce(t - 0.54719f) + 0.7f)
             else if (t < 0.9644f)
                 bounce(t - 0.8526f) + 0.9f
             else
-                bounce(t - 1.0435f) + 0.95f
+                2 - (bounce(t - 1.0435f) + 0.95f)
         }
 
         private fun bounce(t: Float): Float {
