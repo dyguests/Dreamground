@@ -536,11 +536,7 @@ class SkyClockView @JvmOverloads constructor(
             cameraRotateXHolder,
             cameraRotateYHolder, canvasTranslateXHolder, canvasTranslateYHolder
         )
-        mShakeAnim?.interpolator = TimeInterpolator { input ->
-            //http://inloop.github.io/interpolator/
-            val f = 0.571429f
-            (Math.pow(2.0, (-2 * input).toDouble()) * Math.sin((input - f / 4) * (2 * Math.PI) / f) + 1).toFloat()
-        }
+        mShakeAnim?.interpolator = ShakeInterpolator
         mShakeAnim?.duration = 1000
         mShakeAnim?.addUpdateListener { animation ->
             mCameraRotateX = animation.getAnimatedValue(cameraRotateXName) as Float
@@ -618,5 +614,16 @@ class SkyClockView @JvmOverloads constructor(
         percentArr[0] = percentX
         percentArr[1] = percentY
         return percentArr
+    }
+
+    /**
+     * 抖动插值器
+     */
+    object ShakeInterpolator : TimeInterpolator {
+        override fun getInterpolation(input: Float): Float {
+            //http://inloop.github.io/interpolator/
+            val f = 0.571429f
+            return (Math.pow(2.0, (-2 * input).toDouble()) * Math.sin((input - f / 4) * (2 * Math.PI) / f) + 1).toFloat()
+        }
     }
 }
