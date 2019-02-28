@@ -11,7 +11,9 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
+import androidx.annotation.IntRange
 import androidx.annotation.Nullable
+import java.util.*
 
 /**
  * 天空
@@ -24,6 +26,8 @@ class SkyClockView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    // ---------- 固定值 ----------
+
     private val hourDialPaint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.STROKE
@@ -33,12 +37,7 @@ class SkyClockView @JvmOverloads constructor(
         Paint()
     }
 
-    /** 时针中心坐标 */
-    private val hourCenter = PointF()
-    private var hourDialRadius = 0f
-    /**刻度的间距角度*/
-    var spaceAngle = 0f
-
+    // ---------- 输入参数 ----------
 
     @ColorInt
     private val backgroundColor = Color.BLUE
@@ -48,6 +47,21 @@ class SkyClockView @JvmOverloads constructor(
     private val hourDialColor = Color.WHITE
     @Dimension(unit = Dimension.PX)
     private val hourTextSize = 100f
+    /** 是否使用24小时制 */
+    private var is24Hour = true
+
+    // ---------- 变量 ----------
+
+    /** 时针中心坐标 */
+    private val hourCenter = PointF()
+    private var hourDialRadius = 0f
+    /**刻度的间距角度*/
+    var spaceAngle = 0f
+    /** 时针方向（表盘） */
+    private var hourDegree = 0f
+    /** 0 为 am,1 为 pm */
+    @IntRange(from = 0, to = 1)
+    private var amPm = 0
 
     // ---------- 临时变量区 ----------
 
@@ -55,7 +69,6 @@ class SkyClockView @JvmOverloads constructor(
     private val tmpRectF = RectF()
 
     init {
-
 
         hourDialPaint.apply {
             strokeWidth = hourDialStrokeWidth
@@ -94,7 +107,14 @@ class SkyClockView @JvmOverloads constructor(
     }
 
     private fun updateTimeDegree() {
+        val calendar = Calendar.getInstance()
+        val milliSecond = calendar.get(Calendar.MILLISECOND)
+        val second = calendar.get(Calendar.SECOND) + milliSecond / 1000f
+        val minute = calendar.get(Calendar.MINUTE) + second / 60f
+        val hour = calendar.get(Calendar.HOUR) + minute / 60f
 
+        hourDegree = hour / 12f * 360
+        amPm = hour.toInt() / 12
     }
 
     private fun drawHourDial(canvas: Canvas) {
@@ -108,12 +128,14 @@ class SkyClockView @JvmOverloads constructor(
             bottom = hourCenter.y + hourDialRadius
         }
 
+        //先旋转画布（使表盘旋转）
+        canvas.rotate(-hourDegree, hourCenter.x, hourCenter.y)
+
         for (i in 0 until 12) {
             // 表盘刻线
             canvas.drawArc(tmpRectF, -90f + spaceAngle / 2f, 30f - spaceAngle, false, hourDialPaint)
 
-            // 表盘数字
-            val timeText = "12"
+            val timeText = getHourText(i)
             hourTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
 
             canvas.drawText(timeText, hourCenter.x - tmpRect.exactCenterX(), hourCenter.y - hourDialRadius - tmpRect.exactCenterY(), hourTextPaint)
@@ -121,5 +143,24 @@ class SkyClockView @JvmOverloads constructor(
         }
 
         canvas.restoreToCount(saveCount)
+    }
+
+    /**
+     * @param i 第几个文字（从正上方的12点钟开始）
+     */
+    private fun getHourText(i: Int): String {
+        var hourInt = i
+        if (hourInt == 0) {
+            hourInt += 12
+        }
+
+        return if (is24Hour) {
+            if (amPm == 1) {
+                hourInt += 12
+            }
+            hourInt.toString()
+        } else {
+            hourInt.toString() /*+ if (amPm == 0) "\nam" else "\npm"*/
+        }
     }
 }
