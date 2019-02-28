@@ -177,27 +177,30 @@ class SkyClockView @JvmOverloads constructor(
         val mPaddingRight = paddingRight - (valid1Width - validWidth) / 2f
         val mPaddingBottom = paddingBottom - (valid1Height - validHeight) / 2f
 
+        val hourCenterY = mPaddingTop + validHeight * 0.67f
+        val totalOffsetY = hourCenterY - (mPaddingTop + validHeight * 0.5f)
+
         hourCenter.apply {
-            x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 0.67f
+            x = mPaddingLeft + validWidth / 2f
+            y = hourCenterY - totalOffsetY
         }
-        hourDialRadius = hourCenter.y - (paddingTop + validHeight * 0.3f)
+        hourDialRadius = hourCenter.y - (mPaddingTop + validHeight * 0.3f) + totalOffsetY
         hourTextPaint.getTextBounds("24", 0, 2, tmpRect)
         hourSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / hourDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
         minuteCenter.apply {
-            x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 0.684f
+            x = mPaddingLeft + validWidth / 2f
+            y = mPaddingTop + validHeight * 0.684f - totalOffsetY
         }
-        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.378f)
+        minuteDialRadius = minuteCenter.y - (mPaddingTop + validHeight * 0.378f) + totalOffsetY
         minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
         minuteSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / minuteDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
         secondCenter.apply {
-            x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 0.7f
+            x = mPaddingLeft + validWidth / 2f
+            y = mPaddingTop + validHeight * 0.7f - totalOffsetY
         }
-        secondDialRadius = secondCenter.y - (paddingTop + validHeight * 0.5f)
+        secondDialRadius = secondCenter.y - (mPaddingTop + validHeight * 0.5f) + totalOffsetY
         secondTextPaint.getTextBounds("60", 0, 2, tmpRect)
         secondSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / secondDialRadius * 1.5f/*额外空余百分比*/).toFloat()
     }
