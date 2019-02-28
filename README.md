@@ -25,6 +25,12 @@ Add it in your root build.gradle at the end of repositories:
 	        implementation 'com.github.dyguests:Dreamground:x.y.z'
 	}
 
+## Usage
+
+    <com.fanhl.dreamground.SkyClockView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 ## Config
 
     <declare-styleable name="RippleView">
