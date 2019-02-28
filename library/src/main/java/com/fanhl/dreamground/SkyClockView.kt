@@ -23,6 +23,9 @@ import androidx.annotation.Dimension
 import androidx.annotation.IntRange
 import androidx.annotation.Nullable
 import java.util.*
+import kotlin.math.PI
+import kotlin.math.min
+import kotlin.math.sin
 
 /**
  * 天空
@@ -620,10 +623,31 @@ class SkyClockView @JvmOverloads constructor(
      * 抖动插值器
      */
     object ShakeInterpolator : TimeInterpolator {
-        override fun getInterpolation(input: Float): Float {
-            //http://inloop.github.io/interpolator/
-            val f = 0.571429f
-            return (Math.pow(2.0, (-2 * input).toDouble()) * Math.sin((input - f / 4) * (2 * Math.PI) / f) + 1).toFloat()
+        private val t = 6
+
+        override fun getInterpolation(x: Float): Float {
+            //https://www.desmos.com/calculator/zqpuzoazsp
+
+            return F(x) * S(x) + L(x)
+        }
+
+        private fun F(x: Float): Float {
+            return 1 - x
+        }
+
+        private fun S(x: Float): Float {
+            return sin(t * O(x) * PI).toFloat()
+        }
+
+        private fun O(x: Float): Float {
+            return Math.pow(x.toDouble(), 4.0).toFloat()
+        }
+
+        private fun L(x: Float): Float {
+            return min(
+                1.3f * Math.pow(x.toDouble(), 1 / 3.0),
+                1.0
+            ).toFloat()
         }
     }
 }
