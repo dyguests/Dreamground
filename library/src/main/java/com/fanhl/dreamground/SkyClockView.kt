@@ -365,6 +365,8 @@ class SkyClockView @JvmOverloads constructor(
     private fun drawHourDial(canvas: Canvas) {
         val saveCount = canvas.save()
 
+        canvas.translate(mCanvasTranslateX, mCanvasTranslateY)
+
         // 表盘刻线
         tmpRectF.apply {
             left = hourCenter.x - hourDialRadius
@@ -391,16 +393,24 @@ class SkyClockView @JvmOverloads constructor(
     }
 
     private fun drawHourHand(canvas: Canvas) {
+        val saveCount = canvas.save()
+
+        canvas.translate(mCanvasTranslateX, mCanvasTranslateY)
+
         tmpPath.reset()
         tmpPath.moveTo(hourCenter.x, hourCenter.y - hourDialRadius + secondDialRadius * 0.1f)
         tmpPath.lineTo(hourCenter.x + secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.2f)
         tmpPath.lineTo(hourCenter.x - secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.2f)
         tmpPath.close()
         canvas.drawPath(tmpPath, handPaint)
+
+        canvas.restoreToCount(saveCount)
     }
 
     private fun drawMinuteDial(canvas: Canvas) {
         val saveCount = canvas.save()
+
+        canvas.translate(mCanvasTranslateX * 1.6f, mCanvasTranslateY * 1.6f)
 
         // 表盘刻线
         tmpRectF.apply {
@@ -436,16 +446,25 @@ class SkyClockView @JvmOverloads constructor(
     }
 
     private fun drawMinuteHand(canvas: Canvas) {
+        val saveCount = canvas.save()
+
+        canvas.translate(mCanvasTranslateX * 1.6f, mCanvasTranslateY * 1.6f)
+
         tmpPath.reset()
         tmpPath.moveTo(minuteCenter.x, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.1f)
         tmpPath.lineTo(minuteCenter.x + secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.2f)
         tmpPath.lineTo(minuteCenter.x - secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.2f)
         tmpPath.close()
         canvas.drawPath(tmpPath, handPaint)
+
+        canvas.restoreToCount(saveCount)
     }
 
     private fun drawSecondDial(canvas: Canvas) {
         val saveCount = canvas.save()
+
+        canvas.translate(mCanvasTranslateX * 2f, mCanvasTranslateY * 2f)
+
 
         // 表盘刻线
         tmpRectF.apply {
@@ -487,12 +506,18 @@ class SkyClockView @JvmOverloads constructor(
     }
 
     private fun drawSecondHand(canvas: Canvas) {
+        val saveCount = canvas.save()
+
+        canvas.translate(mCanvasTranslateX * 2f, mCanvasTranslateY * 2f)
+
         tmpPath.reset()
         tmpPath.moveTo(secondCenter.x, secondCenter.y - secondDialRadius + secondDialRadius * 0.15f)
         tmpPath.lineTo(secondCenter.x + secondDialRadius * 0.05f, secondCenter.y - secondDialRadius + secondDialRadius * 0.25f)
         tmpPath.lineTo(secondCenter.x - secondDialRadius * 0.05f, secondCenter.y - secondDialRadius + secondDialRadius * 0.25f)
         tmpPath.close()
         canvas.drawPath(tmpPath, handPaint)
+
+        canvas.restoreToCount(saveCount)
     }
 
     /**
