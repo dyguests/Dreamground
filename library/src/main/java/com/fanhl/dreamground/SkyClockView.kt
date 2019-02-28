@@ -4,9 +4,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
+import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
@@ -34,7 +36,7 @@ class SkyClockView @JvmOverloads constructor(
         }
     }
     private val hourTextPaint by lazy {
-        Paint()
+        TextPaint()
     }
     private val minuteDialPaint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -42,7 +44,7 @@ class SkyClockView @JvmOverloads constructor(
         }
     }
     private val minuteTextPaint by lazy {
-        Paint()
+        TextPaint()
     }
     private val secondDialPaint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -50,7 +52,10 @@ class SkyClockView @JvmOverloads constructor(
         }
     }
     private val secondTextPaint by lazy {
-        Paint()
+        TextPaint()
+    }
+    private val handPaint by lazy {
+        Paint(Paint.ANTI_ALIAS_FLAG)
     }
 
     // ---------- 输入参数 ----------
@@ -62,13 +67,13 @@ class SkyClockView @JvmOverloads constructor(
     @ColorInt
     private var mBackgroundColor = 0
     @Dimension(unit = Dimension.PX)
-    private val hourDialStrokeWidth = 6f
+    private val hourDialStrokeWidth = 4f
     @ColorInt
     private var hourDialColor = 0
     @Dimension(unit = Dimension.PX)
     private val hourTextSize = 60f
     @Dimension(unit = Dimension.PX)
-    private val minuteDialStrokeWidth = 5f
+    private val minuteDialStrokeWidth = 4f
     @ColorInt
     private var minuteDialColor = 0
     @Dimension(unit = Dimension.PX)
@@ -112,6 +117,7 @@ class SkyClockView @JvmOverloads constructor(
 
     private val tmpRect = Rect()
     private val tmpRectF = RectF()
+    private val tmpPath = Path()
 
     init {
         darkColor = Color.parseColor("#80ffffff")
@@ -149,6 +155,9 @@ class SkyClockView @JvmOverloads constructor(
             textSize = secondTextSize
             color = secondDialColor
         }
+        handPaint.apply {
+            color = darkColor
+        }
 
         setBackgroundColor(mBackgroundColor)
     }
@@ -161,17 +170,17 @@ class SkyClockView @JvmOverloads constructor(
 
         hourCenter.apply {
             x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 1.3f
+            y = paddingTop + validHeight * 0.64f
         }
-        hourDialRadius = hourCenter.y - (paddingTop + validHeight * 0.167f)
+        hourDialRadius = hourCenter.y - (paddingTop + validHeight * 0.25f)
         hourTextPaint.getTextBounds("24", 0, 2, tmpRect)
         hourSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / hourDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
         minuteCenter.apply {
             x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 0.66f
+            y = paddingTop + validHeight * 0.67f
         }
-        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.33f)
+        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.36f)
         minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
         minuteSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / minuteDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
@@ -188,8 +197,11 @@ class SkyClockView @JvmOverloads constructor(
         super.onDraw(canvas ?: return)
         updateTimeDegree()
         drawHourDial(canvas)
+        drawHourHand(canvas)
         drawMinuteDial(canvas)
+        drawMinuteHand(canvas)
         drawSecondDial(canvas)
+        drawSecondHand(canvas)
         invalidate()
     }
 
@@ -234,6 +246,15 @@ class SkyClockView @JvmOverloads constructor(
         canvas.restoreToCount(saveCount)
     }
 
+    private fun drawHourHand(canvas: Canvas) {
+        tmpPath.reset()
+        tmpPath.moveTo(hourCenter.x, hourCenter.y - hourDialRadius + secondDialRadius * 0.15f)
+        tmpPath.lineTo(hourCenter.x + secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.25f)
+        tmpPath.lineTo(hourCenter.x - secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.25f)
+        tmpPath.close()
+        canvas.drawPath(tmpPath, handPaint)
+    }
+
     private fun drawMinuteDial(canvas: Canvas) {
         val saveCount = canvas.save()
 
@@ -268,6 +289,15 @@ class SkyClockView @JvmOverloads constructor(
         }
 
         canvas.restoreToCount(saveCount)
+    }
+
+    private fun drawMinuteHand(canvas: Canvas) {
+        tmpPath.reset()
+        tmpPath.moveTo(minuteCenter.x, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.15f)
+        tmpPath.lineTo(minuteCenter.x + secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.25f)
+        tmpPath.lineTo(minuteCenter.x - secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.25f)
+        tmpPath.close()
+        canvas.drawPath(tmpPath, handPaint)
     }
 
     private fun drawSecondDial(canvas: Canvas) {
@@ -310,6 +340,15 @@ class SkyClockView @JvmOverloads constructor(
         }
 
         canvas.restoreToCount(saveCount)
+    }
+
+    private fun drawSecondHand(canvas: Canvas) {
+        tmpPath.reset()
+        tmpPath.moveTo(secondCenter.x, secondCenter.y - secondDialRadius + secondDialRadius * 0.15f)
+        tmpPath.lineTo(secondCenter.x + secondDialRadius * 0.05f, secondCenter.y - secondDialRadius + secondDialRadius * 0.25f)
+        tmpPath.lineTo(secondCenter.x - secondDialRadius * 0.05f, secondCenter.y - secondDialRadius + secondDialRadius * 0.25f)
+        tmpPath.close()
+        canvas.drawPath(tmpPath, handPaint)
     }
 
     /**
