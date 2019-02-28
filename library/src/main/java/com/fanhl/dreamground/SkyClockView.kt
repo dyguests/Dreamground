@@ -64,7 +64,15 @@ class SkyClockView @JvmOverloads constructor(
     @Dimension(unit = Dimension.PX)
     private val hourTextSize = 100f
     @Dimension(unit = Dimension.PX)
+    private val minuteDialStrokeWidth = 8f
+    @ColorInt
+    private val minuteDialColor = Color.WHITE
+    @Dimension(unit = Dimension.PX)
     private val minuteTextSize = 80f
+    @Dimension(unit = Dimension.PX)
+    private val secondDialStrokeWidth = 4f
+    @ColorInt
+    private val secondDialColor = Color.WHITE
     @Dimension(unit = Dimension.PX)
     private val secondTextSize = 40f
     /** 是否使用24小时制 */
@@ -113,22 +121,22 @@ class SkyClockView @JvmOverloads constructor(
             color = hourDialColor
         }
         minuteDialPaint.apply {
-            strokeWidth = hourDialStrokeWidth // FIXME: 2019/2/28 fanhl
-            color = hourDialColor
+            strokeWidth = minuteDialStrokeWidth
+            color = minuteDialColor
             strokeCap = Paint.Cap.ROUND
         }
         minuteTextPaint.apply {
             textSize = minuteTextSize
-            color = hourDialColor // FIXME: 2019/2/28 fanhl
+            color = minuteDialColor
         }
         secondDialPaint.apply {
-            strokeWidth = hourDialStrokeWidth // FIXME: 2019/2/28 fanhl
-            color = hourDialColor
+            strokeWidth = secondDialStrokeWidth
+            color = secondDialColor
             strokeCap = Paint.Cap.ROUND
         }
         secondTextPaint.apply {
             textSize = secondTextSize
-            color = hourDialColor // FIXME: 2019/2/28 fanhl
+            color = secondDialColor
         }
 
         setBackgroundColor(backgroundColor)
