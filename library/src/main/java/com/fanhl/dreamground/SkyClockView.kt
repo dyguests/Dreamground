@@ -55,14 +55,19 @@ class SkyClockView @JvmOverloads constructor(
     private val tmpRectF = RectF()
 
     init {
+
+
         hourDialPaint.apply {
             strokeWidth = hourDialStrokeWidth
             color = hourDialColor
+            strokeCap = Paint.Cap.ROUND
         }
         hourTextPaint.apply {
             textSize = hourTextSize
             color = hourDialColor
         }
+
+        setBackgroundColor(backgroundColor)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -83,9 +88,13 @@ class SkyClockView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas ?: return)
-        canvas.drawColor(Color.RED)
+        updateTimeDegree()
         drawHourDial(canvas)
         invalidate()
+    }
+
+    private fun updateTimeDegree() {
+
     }
 
     private fun drawHourDial(canvas: Canvas) {
