@@ -62,15 +62,15 @@ class SkyClockView @JvmOverloads constructor(
     @ColorInt
     private var mBackgroundColor = 0
     @Dimension(unit = Dimension.PX)
-    private val hourDialStrokeWidth = 10f
+    private val hourDialStrokeWidth = 6f
     @ColorInt
-    private val hourDialColor = Color.WHITE
+    private var hourDialColor = 0
     @Dimension(unit = Dimension.PX)
     private val hourTextSize = 100f
     @Dimension(unit = Dimension.PX)
-    private val minuteDialStrokeWidth = 8f
+    private val minuteDialStrokeWidth = 5f
     @ColorInt
-    private val minuteDialColor = Color.WHITE
+    private var minuteDialColor = 0
     @Dimension(unit = Dimension.PX)
     private val minuteTextSize = 80f
     @Dimension(unit = Dimension.PX)
@@ -118,8 +118,8 @@ class SkyClockView @JvmOverloads constructor(
         lightColor = Color.parseColor("#ffffff")
         mBackgroundColor = Color.parseColor("#237EAD")
 
-
-
+        hourDialColor = darkColor
+        minuteDialColor = darkColor
         secondDialColor = darkColor
 
         hourDialPaint.apply {
@@ -169,7 +169,7 @@ class SkyClockView @JvmOverloads constructor(
 
         minuteCenter.apply {
             x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 1f
+            y = paddingTop + validHeight * 0.66f
         }
         minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.33f)
         minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
