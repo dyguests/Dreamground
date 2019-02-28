@@ -56,7 +56,7 @@ class SkyClockView @JvmOverloads constructor(
     // ---------- 输入参数 ----------
 
     @ColorInt
-    private val backgroundColor = Color.BLUE
+    private var mBackgroundColor = 0
     @Dimension(unit = Dimension.PX)
     private val hourDialStrokeWidth = 10f
     @ColorInt
@@ -110,6 +110,7 @@ class SkyClockView @JvmOverloads constructor(
     private val tmpRectF = RectF()
 
     init {
+        mBackgroundColor = Color.parseColor("#237EAD")
 
         hourDialPaint.apply {
             strokeWidth = hourDialStrokeWidth
@@ -139,7 +140,7 @@ class SkyClockView @JvmOverloads constructor(
             color = secondDialColor
         }
 
-        setBackgroundColor(backgroundColor)
+        setBackgroundColor(mBackgroundColor)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -152,7 +153,7 @@ class SkyClockView @JvmOverloads constructor(
             x = paddingLeft + validWidth / 2f
             y = paddingTop + validHeight * 1.3f
         }
-        hourDialRadius = hourCenter.y - (paddingTop + validHeight * 0.2f)
+        hourDialRadius = hourCenter.y - (paddingTop + validHeight * 0.167f)
         hourTextPaint.getTextBounds("24", 0, 2, tmpRect)
         hourSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / hourDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
@@ -160,7 +161,7 @@ class SkyClockView @JvmOverloads constructor(
             x = paddingLeft + validWidth / 2f
             y = paddingTop + validHeight * 1f
         }
-        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.4f)
+        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.33f)
         minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
         minuteSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / minuteDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
@@ -168,7 +169,7 @@ class SkyClockView @JvmOverloads constructor(
             x = paddingLeft + validWidth / 2f
             y = paddingTop + validHeight * 0.7f
         }
-        secondDialRadius = secondCenter.y - (paddingTop + validHeight * 0.6f)
+        secondDialRadius = secondCenter.y - (paddingTop + validHeight * 0.5f)
         secondTextPaint.getTextBounds("60", 0, 2, tmpRect)
         secondSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / secondDialRadius * 1.5f/*额外空余百分比*/).toFloat()
     }

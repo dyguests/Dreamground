@@ -114,7 +114,7 @@ class LinMiClockView @JvmOverloads constructor(
             style = Paint.Style.FILL
             color = mDarkColor
         }
-        mMinuteHandPaint.setColor(mLightColor)
+        mMinuteHandPaint.color = mLightColor
         mScaleArcPaint.style = Paint.Style.STROKE
         mTextPaint.apply {
             textSize = 40f
