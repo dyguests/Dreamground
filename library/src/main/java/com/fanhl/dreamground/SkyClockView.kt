@@ -56,6 +56,10 @@ class SkyClockView @JvmOverloads constructor(
     // ---------- 输入参数 ----------
 
     @ColorInt
+    private var darkColor: Int = 0
+    @ColorInt
+    private var lightColor: Int = 0
+    @ColorInt
     private var mBackgroundColor = 0
     @Dimension(unit = Dimension.PX)
     private val hourDialStrokeWidth = 10f
@@ -72,7 +76,7 @@ class SkyClockView @JvmOverloads constructor(
     @Dimension(unit = Dimension.PX)
     private val secondDialStrokeWidth = 4f
     @ColorInt
-    private val secondDialColor = Color.WHITE
+    private var secondDialColor = 0
     @Dimension(unit = Dimension.PX)
     private val secondTextSize = 40f
     /** 是否使用24小时制 */
@@ -110,7 +114,13 @@ class SkyClockView @JvmOverloads constructor(
     private val tmpRectF = RectF()
 
     init {
+        darkColor = Color.parseColor("#80ffffff")
+        lightColor = Color.parseColor("#ffffff")
         mBackgroundColor = Color.parseColor("#237EAD")
+
+
+
+        secondDialColor = darkColor
 
         hourDialPaint.apply {
             strokeWidth = hourDialStrokeWidth
@@ -266,15 +276,29 @@ class SkyClockView @JvmOverloads constructor(
         //先旋转画布（使表盘旋转）
         canvas.rotate(-secondDegree, secondCenter.x, secondCenter.y)
 
-        for (i in 0 until 12) {
-            // 表盘刻线
-            canvas.drawArc(tmpRectF, -90f + secondSpaceAngle / 2f, 30f - secondSpaceAngle, false, secondDialPaint)
+        val timesPerHourUnit = 5 * 2
+        val frequency = 12 * timesPerHourUnit
+        for (i in 0 until frequency) {
+            if (i % timesPerHourUnit != 0) {
+                canvas.drawLine(
+                    secondCenter.x, secondCenter.y - secondDialRadius,
+                    secondCenter.x, secondCenter.y - secondDialRadius + secondDialRadius * 0.1f,
+                    secondDialPaint
+                )
+            } else {
+                canvas.drawLine(
+                    secondCenter.x, secondCenter.y - secondDialRadius - secondDialRadius * 0.1f,
+                    secondCenter.x, secondCenter.y - secondDialRadius + secondDialRadius * 0.1f,
+                    secondDialPaint
+                )
 
-            val timeText = getSecondText(i)
-            secondTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
+                val timeText = getSecondText(i / timesPerHourUnit)
+                secondTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
 
-            canvas.drawText(timeText, secondCenter.x - tmpRect.exactCenterX(), secondCenter.y - secondDialRadius - tmpRect.exactCenterY(), secondTextPaint)
-            canvas.rotate(30f, secondCenter.x, secondCenter.y)
+                canvas.drawText(timeText, secondCenter.x - tmpRect.exactCenterX(), secondCenter.y - secondDialRadius - secondDialRadius * 0.1f - tmpRect.height() / 2f, secondTextPaint)
+            }
+
+            canvas.rotate(360f / frequency, secondCenter.x, secondCenter.y)
         }
 
         canvas.restoreToCount(saveCount)
