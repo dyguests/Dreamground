@@ -162,6 +162,25 @@ class SkyClockView @JvmOverloads constructor(
         setBackgroundColor(mBackgroundColor)
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        setMeasuredDimension(measureDimension(widthMeasureSpec), measureDimension(heightMeasureSpec))
+    }
+
+    private fun measureDimension(measureSpec: Int): Int {
+        var result: Int
+        val mode = View.MeasureSpec.getMode(measureSpec)
+        val size = View.MeasureSpec.getSize(measureSpec)
+        if (mode == View.MeasureSpec.EXACTLY) {
+            result = size
+        } else {
+            result = 800
+            if (mode == View.MeasureSpec.AT_MOST) {
+                result = Math.min(result, size)
+            }
+        }
+        return result
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
@@ -260,9 +279,9 @@ class SkyClockView @JvmOverloads constructor(
 
     private fun drawHourHand(canvas: Canvas) {
         tmpPath.reset()
-        tmpPath.moveTo(hourCenter.x, hourCenter.y - hourDialRadius + secondDialRadius * 0.15f)
-        tmpPath.lineTo(hourCenter.x + secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.25f)
-        tmpPath.lineTo(hourCenter.x - secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.25f)
+        tmpPath.moveTo(hourCenter.x, hourCenter.y - hourDialRadius + secondDialRadius * 0.1f)
+        tmpPath.lineTo(hourCenter.x + secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.2f)
+        tmpPath.lineTo(hourCenter.x - secondDialRadius * 0.05f, hourCenter.y - hourDialRadius + secondDialRadius * 0.2f)
         tmpPath.close()
         canvas.drawPath(tmpPath, handPaint)
     }
@@ -305,9 +324,9 @@ class SkyClockView @JvmOverloads constructor(
 
     private fun drawMinuteHand(canvas: Canvas) {
         tmpPath.reset()
-        tmpPath.moveTo(minuteCenter.x, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.15f)
-        tmpPath.lineTo(minuteCenter.x + secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.25f)
-        tmpPath.lineTo(minuteCenter.x - secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.25f)
+        tmpPath.moveTo(minuteCenter.x, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.1f)
+        tmpPath.lineTo(minuteCenter.x + secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.2f)
+        tmpPath.lineTo(minuteCenter.x - secondDialRadius * 0.05f, minuteCenter.y - minuteDialRadius + secondDialRadius * 0.2f)
         tmpPath.close()
         canvas.drawPath(tmpPath, handPaint)
     }
