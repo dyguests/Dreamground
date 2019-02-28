@@ -140,12 +140,15 @@ class SkyClockView @JvmOverloads constructor(
     private var mMaxCanvasTranslate: Float = 0f
     /* 手指松开时时钟晃动的动画 */
     private var mShakeAnim: ValueAnimator? = null
+    /** 手指按下时的位置 */
+    private val downPointF = PointF()
 
     // ---------- 临时变量区 ----------
 
     private val tmpRect = Rect()
     private val tmpRectF = RectF()
     private val tmpPath = Path()
+    private val tmpPointF = PointF()
 
     init {
         darkColor = Color.parseColor("#80ffffff")
@@ -197,13 +200,21 @@ class SkyClockView @JvmOverloads constructor(
                 if (mShakeAnim?.isRunning == true) {
                     mShakeAnim?.cancel()
                 }
-                getCameraRotate(event)
-                getCanvasTranslate(event)
+                downPointF.apply {
+                    x = event.x
+                    y = event.y
+                }
+//                getCameraRotate(event)
+//                getCanvasTranslate(event)
             }
             MotionEvent.ACTION_MOVE -> {
                 //根据手指坐标计算camera应该旋转的大小
-                getCameraRotate(event)
-                getCanvasTranslate(event)
+                tmpPointF.apply {
+                    x = event.x - downPointF.x
+                    y = event.y - downPointF.y
+                }
+                getCameraRotate(tmpPointF)
+                getCanvasTranslate(tmpPointF)
             }
             MotionEvent.ACTION_UP ->
                 //松开手指，时钟复原并伴随晃动动画
@@ -295,9 +306,9 @@ class SkyClockView @JvmOverloads constructor(
      *
      * @param event motionEvent
      */
-    private fun getCameraRotate(event: MotionEvent) {
-        val rotateX = -(event.y - height / 2)
-        val rotateY = event.x - width / 2
+    private fun getCameraRotate(event: PointF) {
+        val rotateX = -(event.y /*- height / 2*/)
+        val rotateY = event.x /*- width / 2*/
         //求出此时旋转的大小与半径之比
         val percentArr = getPercent(rotateX, rotateY)
         //最终旋转的大小按比例匀称改变
@@ -313,9 +324,9 @@ class SkyClockView @JvmOverloads constructor(
      *
      * @param event motionEvent
      */
-    private fun getCanvasTranslate(event: MotionEvent) {
-        val translateX = event.x - width / 2
-        val translateY = event.y - height / 2
+    private fun getCanvasTranslate(event: PointF) {
+        val translateX = event.x /*- width / 2*/
+        val translateY = event.y /*- height / 2*/
         //求出此时位移的大小与半径之比
         val percentArr = getPercent(translateX, translateY)
         //最终位移的大小按比例匀称改变
