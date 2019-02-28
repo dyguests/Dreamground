@@ -165,10 +165,17 @@ class SkyClockView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        val side = minOf(w - paddingLeft - paddingRight, h - paddingTop - paddingBottom)
+        val valid1Width = w - paddingLeft - paddingRight
+        val valid1Height = h - paddingTop - paddingBottom
+        val side = minOf(valid1Width, valid1Height)
 
         val validWidth = side
         val validHeight = side
+
+        val mPaddingLeft = paddingLeft + (valid1Width - validWidth) / 2f
+        val mPaddingTop = paddingTop + (valid1Height - validHeight) / 2f
+        val mPaddingRight = paddingRight - (valid1Width - validWidth) / 2f
+        val mPaddingBottom = paddingBottom - (valid1Height - validHeight) / 2f
 
         hourCenter.apply {
             x = paddingLeft + validWidth / 2f
