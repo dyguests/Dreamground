@@ -209,9 +209,9 @@ class SkyClockView @JvmOverloads constructor(
 
         minuteCenter.apply {
             x = mPaddingLeft + validWidth / 2f
-            y = mPaddingTop + validHeight * 0.684f - totalOffsetY
+            y = mPaddingTop + validHeight * 0.685f - totalOffsetY
         }
-        minuteDialRadius = minuteCenter.y - (mPaddingTop + validHeight * 0.378f) + totalOffsetY
+        minuteDialRadius = minuteCenter.y - (mPaddingTop + validHeight * 0.3775f) + totalOffsetY
         minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
         minuteSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / minuteDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
