@@ -4,7 +4,7 @@
 
 Dreamground.一些动态的背景自定义控件。
 
-<img src="./graphics/ripple.gif" width="40%"/>
+<img src="./graphics/sky.gif" width="40%"/>
 
 ## Import
 
@@ -25,7 +25,7 @@ Add it in your root build.gradle at the end of repositories:
 	        implementation 'com.github.dyguests:Dreamground:x.y.z'
 	}
 
-## Usage
+## Config
 
     <declare-styleable name="RippleView">
         <attr name="bgColor" format="color" />
