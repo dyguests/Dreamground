@@ -71,19 +71,19 @@ class SkyClockView @JvmOverloads constructor(
     @ColorInt
     private var hourDialColor = 0
     @Dimension(unit = Dimension.PX)
-    private val hourTextSize = 60f
+    private val hourTextSize = 40f
     @Dimension(unit = Dimension.PX)
     private val minuteDialStrokeWidth = 4f
     @ColorInt
     private var minuteDialColor = 0
     @Dimension(unit = Dimension.PX)
-    private val minuteTextSize = 50f
+    private val minuteTextSize = 35f
     @Dimension(unit = Dimension.PX)
     private val secondDialStrokeWidth = 4f
     @ColorInt
     private var secondDialColor = 0
     @Dimension(unit = Dimension.PX)
-    private val secondTextSize = 40f
+    private val secondTextSize = 30f
     /** 是否使用24小时制 */
     private var is24Hour = true
 
@@ -165,8 +165,10 @@ class SkyClockView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        val validWidth = w - paddingLeft - paddingRight
-        val validHeight = h - paddingTop - paddingBottom
+        val side = minOf(w - paddingLeft - paddingRight, h - paddingTop - paddingBottom)
+
+        val validWidth = side
+        val validHeight = side
 
         hourCenter.apply {
             x = paddingLeft + validWidth / 2f
@@ -178,9 +180,9 @@ class SkyClockView @JvmOverloads constructor(
 
         minuteCenter.apply {
             x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 0.68f
+            y = paddingTop + validHeight * 0.684f
         }
-        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.38f)
+        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.378f)
         minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
         minuteSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / minuteDialRadius * 1.5f/*额外空余百分比*/).toFloat()
 
