@@ -23,9 +23,6 @@ import androidx.annotation.Dimension
 import androidx.annotation.IntRange
 import androidx.annotation.Nullable
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.min
-import kotlin.math.sin
 
 /**
  * 天空
@@ -623,31 +620,27 @@ class SkyClockView @JvmOverloads constructor(
      * 抖动插值器
      */
     object ShakeInterpolator : TimeInterpolator {
-        private val t = 6
-
-        override fun getInterpolation(x: Float): Float {
-            //https://www.desmos.com/calculator/zqpuzoazsp
-
-            return F(x) * S(x) + L(x)
+        override fun getInterpolation(t: Float): Float {
+            var t = t
+            // _b(t) = t * t * 8
+            // bs(t) = _b(t) for t < 0.3535
+            // bs(t) = _b(t - 0.54719) + 0.7 for t < 0.7408
+            // bs(t) = _b(t - 0.8526) + 0.9 for t < 0.9644
+            // bs(t) = _b(t - 1.0435) + 0.95 for t <= 1.0
+            // b(t) = bs(t * 1.1226)
+            t *= 1.1226f
+            return if (t < 0.3535f)
+                bounce(t)
+            else if (t < 0.7408f)
+                bounce(t - 0.54719f) + 0.7f
+            else if (t < 0.9644f)
+                bounce(t - 0.8526f) + 0.9f
+            else
+                bounce(t - 1.0435f) + 0.95f
         }
 
-        private fun F(x: Float): Float {
-            return 1 - x
-        }
-
-        private fun S(x: Float): Float {
-            return sin(t * O(x) * PI).toFloat()
-        }
-
-        private fun O(x: Float): Float {
-            return Math.pow(x.toDouble(), 4.0).toFloat()
-        }
-
-        private fun L(x: Float): Float {
-            return min(
-                1.3f * Math.pow(x.toDouble(), 1 / 3.0),
-                1.0
-            ).toFloat()
+        private fun bounce(t: Float): Float {
+            return t * t * 8.0f
         }
     }
 }
