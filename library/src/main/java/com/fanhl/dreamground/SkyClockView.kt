@@ -66,13 +66,13 @@ class SkyClockView @JvmOverloads constructor(
     @ColorInt
     private var hourDialColor = 0
     @Dimension(unit = Dimension.PX)
-    private val hourTextSize = 100f
+    private val hourTextSize = 60f
     @Dimension(unit = Dimension.PX)
     private val minuteDialStrokeWidth = 5f
     @ColorInt
     private var minuteDialColor = 0
     @Dimension(unit = Dimension.PX)
-    private val minuteTextSize = 80f
+    private val minuteTextSize = 50f
     @Dimension(unit = Dimension.PX)
     private val secondDialStrokeWidth = 4f
     @ColorInt
@@ -248,15 +248,23 @@ class SkyClockView @JvmOverloads constructor(
         //先旋转画布（使表盘旋转）
         canvas.rotate(-minuteDegree, minuteCenter.x, minuteCenter.y)
 
-        for (i in 0 until 12) {
-            // 表盘刻线
-            canvas.drawArc(tmpRectF, -90f + minuteSpaceAngle / 2f, 30f - minuteSpaceAngle, false, minuteDialPaint)
+        val timesPerUnit = 5
+        val frequency = 12 * timesPerUnit
+        for (i in 0 until frequency) {
+            if (i % timesPerUnit != 0) {
+                canvas.drawLine(
+                    minuteCenter.x, minuteCenter.y - minuteDialRadius - minuteDialRadius * 0.03f,
+                    minuteCenter.x, minuteCenter.y - minuteDialRadius + minuteDialRadius * 0.03f,
+                    minuteDialPaint
+                )
+            } else {
+                val timeText = getMinuteText(i / timesPerUnit)
+                minuteTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
 
-            val timeText = getMinuteText(i)
-            minuteTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
+                canvas.drawText(timeText, minuteCenter.x - tmpRect.exactCenterX(), minuteCenter.y - minuteDialRadius - tmpRect.exactCenterY(), minuteTextPaint)
+            }
 
-            canvas.drawText(timeText, minuteCenter.x - tmpRect.exactCenterX(), minuteCenter.y - minuteDialRadius - tmpRect.exactCenterY(), minuteTextPaint)
-            canvas.rotate(30f, minuteCenter.x, minuteCenter.y)
+            canvas.rotate(360f / frequency, minuteCenter.x, minuteCenter.y)
         }
 
         canvas.restoreToCount(saveCount)
@@ -276,10 +284,10 @@ class SkyClockView @JvmOverloads constructor(
         //先旋转画布（使表盘旋转）
         canvas.rotate(-secondDegree, secondCenter.x, secondCenter.y)
 
-        val timesPerHourUnit = 5 * 2
-        val frequency = 12 * timesPerHourUnit
+        val timesPerUnit = 5 * 2
+        val frequency = 12 * timesPerUnit
         for (i in 0 until frequency) {
-            if (i % timesPerHourUnit != 0) {
+            if (i % timesPerUnit != 0) {
                 canvas.drawLine(
                     secondCenter.x, secondCenter.y - secondDialRadius,
                     secondCenter.x, secondCenter.y - secondDialRadius + secondDialRadius * 0.1f,
@@ -292,7 +300,7 @@ class SkyClockView @JvmOverloads constructor(
                     secondDialPaint
                 )
 
-                val timeText = getSecondText(i / timesPerHourUnit)
+                val timeText = getSecondText(i / timesPerUnit)
                 secondTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
 
                 canvas.drawText(timeText, secondCenter.x - tmpRect.exactCenterX(), secondCenter.y - secondDialRadius - secondDialRadius * 0.1f - tmpRect.height() / 2f, secondTextPaint)
