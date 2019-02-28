@@ -1,8 +1,14 @@
 package com.fanhl.dreamground
 
+import android.animation.PropertyValuesHolder
+import android.animation.TimeInterpolator
+import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Camera
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PointF
@@ -10,6 +16,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
@@ -113,6 +120,27 @@ class SkyClockView @JvmOverloads constructor(
     @IntRange(from = 0, to = 1)
     private var amPm = 0
 
+    /* 时钟半径，不包括padding值 */
+    private var mRadius: Float = 0f
+    /* 触摸时作用在Camera的矩阵 */
+    private val mCameraMatrix = Matrix()
+    /* 照相机，用于旋转时钟实现3D效果 */
+    private val mCamera = Camera()
+    /* camera绕X轴旋转的角度 */
+    private var mCameraRotateX: Float = 0f
+    /* camera绕Y轴旋转的角度 */
+    private var mCameraRotateY: Float = 0f
+    /* camera旋转的最大角度 */
+    private val mMaxCameraRotate = 10f
+    /* 指针的在x轴的位移 */
+    private var mCanvasTranslateX: Float = 0f
+    /* 指针的在y轴的位移 */
+    private var mCanvasTranslateY: Float = 0f
+    /* 指针的最大位移 */
+    private var mMaxCanvasTranslate: Float = 0f
+    /* 手指松开时时钟晃动的动画 */
+    private var mShakeAnim: ValueAnimator? = null
+
     // ---------- 临时变量区 ----------
 
     private val tmpRect = Rect()
@@ -162,6 +190,28 @@ class SkyClockView @JvmOverloads constructor(
         setBackgroundColor(mBackgroundColor)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                if (mShakeAnim?.isRunning == true) {
+                    mShakeAnim?.cancel()
+                }
+                getCameraRotate(event)
+                getCanvasTranslate(event)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                //根据手指坐标计算camera应该旋转的大小
+                getCameraRotate(event)
+                getCanvasTranslate(event)
+            }
+            MotionEvent.ACTION_UP ->
+                //松开手指，时钟复原并伴随晃动动画
+                startShakeAnim()
+        }
+        return true
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         setMeasuredDimension(measureDimension(widthMeasureSpec), measureDimension(heightMeasureSpec))
     }
@@ -188,13 +238,16 @@ class SkyClockView @JvmOverloads constructor(
         val valid1Height = h - paddingTop - paddingBottom
         val side = minOf(valid1Width, valid1Height)
 
+        mRadius = side / 2f
+        mMaxCanvasTranslate = 0.02f * mRadius
+
         val validWidth = side
         val validHeight = side
 
         val mPaddingLeft = paddingLeft + (valid1Width - validWidth) / 2f
         val mPaddingTop = paddingTop + (valid1Height - validHeight) / 2f
-        val mPaddingRight = paddingRight - (valid1Width - validWidth) / 2f
-        val mPaddingBottom = paddingBottom - (valid1Height - validHeight) / 2f
+//        val mPaddingRight = paddingRight - (valid1Width - validWidth) / 2f
+//        val mPaddingBottom = paddingBottom - (valid1Height - validHeight) / 2f
 
         val hourCenterY = mPaddingTop + validHeight * 0.67f
         val totalOffsetY = hourCenterY - (mPaddingTop + validHeight * 0.5f)
@@ -227,6 +280,7 @@ class SkyClockView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas ?: return)
         updateTimeDegree()
+        setCameraRotate(canvas)
         drawHourDial(canvas)
         drawHourHand(canvas)
         drawMinuteDial(canvas)
@@ -234,6 +288,39 @@ class SkyClockView @JvmOverloads constructor(
         drawSecondDial(canvas)
         drawSecondHand(canvas)
         invalidate()
+    }
+
+    /**
+     * 获取camera旋转的大小
+     *
+     * @param event motionEvent
+     */
+    private fun getCameraRotate(event: MotionEvent) {
+        val rotateX = -(event.y - height / 2)
+        val rotateY = event.x - width / 2
+        //求出此时旋转的大小与半径之比
+        val percentArr = getPercent(rotateX, rotateY)
+        //最终旋转的大小按比例匀称改变
+        mCameraRotateX = percentArr[0] * mMaxCameraRotate
+        mCameraRotateY = percentArr[1] * mMaxCameraRotate
+    }
+
+
+    /**
+     * 当拨动时钟时，会发现时针、分针、秒针和刻度盘会有一个较小的偏移量，形成近大远小的立体偏移效果
+     * 一开始我打算使用 matrix 和 camera 的 mCamera.translate(x, y, z) 方法改变 z 的值
+     * 但是并没有效果，所以就动态计算距离，然后在 onDraw()中分零件地 mCanvas.translate(x, y)
+     *
+     * @param event motionEvent
+     */
+    private fun getCanvasTranslate(event: MotionEvent) {
+        val translateX = event.x - width / 2
+        val translateY = event.y - height / 2
+        //求出此时位移的大小与半径之比
+        val percentArr = getPercent(translateX, translateY)
+        //最终位移的大小按比例匀称改变
+        mCanvasTranslateX = percentArr[0] * mMaxCanvasTranslate
+        mCanvasTranslateY = percentArr[1] * mMaxCanvasTranslate
     }
 
     private fun updateTimeDegree() {
@@ -247,6 +334,21 @@ class SkyClockView @JvmOverloads constructor(
         amPm = hour.toInt() / 12
         minuteDegree = minute / 60f * 360
         secondDegree = second / 60f * 360
+    }
+
+    private fun setCameraRotate(canvas: Canvas) {
+        mCameraMatrix.reset()
+        mCamera.save()
+        mCamera.rotateX(mCameraRotateX)//绕x轴旋转角度
+        mCamera.rotateY(mCameraRotateY)//绕y轴旋转角度
+        mCamera.getMatrix(mCameraMatrix)//相关属性设置到matrix中
+        mCamera.restore()
+        //camera在view左上角那个点，故旋转默认是以左上角为中心旋转
+        //故在动作之前pre将matrix向左移动getWidth()/2长度，向上移动getHeight()/2长度
+        mCameraMatrix.preTranslate((-width / 2).toFloat(), (-height / 2).toFloat())
+        //在动作之后post再回到原位
+        mCameraMatrix.postTranslate((width / 2).toFloat(), (height / 2).toFloat())
+        canvas.concat(mCameraMatrix)//matrix与canvas相关联
     }
 
     private fun drawHourDial(canvas: Canvas) {
@@ -383,6 +485,37 @@ class SkyClockView @JvmOverloads constructor(
     }
 
     /**
+     * 时钟晃动动画
+     */
+    private fun startShakeAnim() {
+        val cameraRotateXName = "cameraRotateX"
+        val cameraRotateYName = "cameraRotateY"
+        val canvasTranslateXName = "canvasTranslateX"
+        val canvasTranslateYName = "canvasTranslateY"
+        val cameraRotateXHolder = PropertyValuesHolder.ofFloat(cameraRotateXName, mCameraRotateX, 0f)
+        val cameraRotateYHolder = PropertyValuesHolder.ofFloat(cameraRotateYName, mCameraRotateY, 0f)
+        val canvasTranslateXHolder = PropertyValuesHolder.ofFloat(canvasTranslateXName, mCanvasTranslateX, 0f)
+        val canvasTranslateYHolder = PropertyValuesHolder.ofFloat(canvasTranslateYName, mCanvasTranslateY, 0f)
+        mShakeAnim = ValueAnimator.ofPropertyValuesHolder(
+            cameraRotateXHolder,
+            cameraRotateYHolder, canvasTranslateXHolder, canvasTranslateYHolder
+        )
+        mShakeAnim?.interpolator = TimeInterpolator { input ->
+            //http://inloop.github.io/interpolator/
+            val f = 0.571429f
+            (Math.pow(2.0, (-2 * input).toDouble()) * Math.sin((input - f / 4) * (2 * Math.PI) / f) + 1).toFloat()
+        }
+        mShakeAnim?.duration = 1000
+        mShakeAnim?.addUpdateListener { animation ->
+            mCameraRotateX = animation.getAnimatedValue(cameraRotateXName) as Float
+            mCameraRotateY = animation.getAnimatedValue(cameraRotateYName) as Float
+            mCanvasTranslateX = animation.getAnimatedValue(canvasTranslateXName) as Float
+            mCanvasTranslateY = animation.getAnimatedValue(canvasTranslateYName) as Float
+        }
+        mShakeAnim?.start()
+    }
+
+    /**
      * @param i 第几个文字（从正上方的12点钟开始）
      */
     private fun getHourText(i: Int): String {
@@ -423,5 +556,31 @@ class SkyClockView @JvmOverloads constructor(
         }
 
         return (secondInt * 5).toString()
+    }
+
+    /**
+     * 获取一个操作旋转或位移大小的比例
+     *
+     * @param x x大小
+     * @param y y大小
+     * @return 装有xy比例的float数组
+     */
+    private fun getPercent(x: Float, y: Float): FloatArray {
+        val percentArr = FloatArray(2)
+        var percentX = x / mRadius
+        var percentY = y / mRadius
+        if (percentX > 1) {
+            percentX = 1f
+        } else if (percentX < -1) {
+            percentX = -1f
+        }
+        if (percentY > 1) {
+            percentY = 1f
+        } else if (percentY < -1) {
+            percentY = -1f
+        }
+        percentArr[0] = percentX
+        percentArr[1] = percentY
+        return percentArr
     }
 }
