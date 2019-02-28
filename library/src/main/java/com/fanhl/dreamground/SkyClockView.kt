@@ -36,6 +36,22 @@ class SkyClockView @JvmOverloads constructor(
     private val hourTextPaint by lazy {
         Paint()
     }
+    private val minuteDialPaint by lazy {
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+        }
+    }
+    private val minuteTextPaint by lazy {
+        Paint()
+    }
+    private val secondDialPaint by lazy {
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+        }
+    }
+    private val secondTextPaint by lazy {
+        Paint()
+    }
 
     // ---------- 输入参数 ----------
 
@@ -47,6 +63,10 @@ class SkyClockView @JvmOverloads constructor(
     private val hourDialColor = Color.WHITE
     @Dimension(unit = Dimension.PX)
     private val hourTextSize = 100f
+    @Dimension(unit = Dimension.PX)
+    private val minuteTextSize = 80f
+    @Dimension(unit = Dimension.PX)
+    private val secondTextSize = 40f
     /** 是否使用24小时制 */
     private var is24Hour = true
 
@@ -56,9 +76,22 @@ class SkyClockView @JvmOverloads constructor(
     private val hourCenter = PointF()
     private var hourDialRadius = 0f
     /**刻度的间距角度*/
-    var spaceAngle = 0f
+    private var hourSpaceAngle = 0f
+    /** 分钟中心坐标 */
+    private val minuteCenter = PointF()
+    private var minuteDialRadius = 0f
+    /**刻度的间距角度*/
+    private var minuteSpaceAngle = 0f
+    /** 秒钟中心坐标 */
+    private val secondCenter = PointF()
+    private var secondDialRadius = 0f
+    /**刻度的间距角度*/
+    private var secondSpaceAngle = 0f
+
     /** 时针方向（表盘） */
     private var hourDegree = 0f
+    private var minuteDegree = 0f
+    private var secondDegree = 0f
     /** 0 为 am,1 为 pm */
     @IntRange(from = 0, to = 1)
     private var amPm = 0
@@ -79,6 +112,24 @@ class SkyClockView @JvmOverloads constructor(
             textSize = hourTextSize
             color = hourDialColor
         }
+        minuteDialPaint.apply {
+            strokeWidth = hourDialStrokeWidth // FIXME: 2019/2/28 fanhl
+            color = hourDialColor
+            strokeCap = Paint.Cap.ROUND
+        }
+        minuteTextPaint.apply {
+            textSize = minuteTextSize
+            color = hourDialColor // FIXME: 2019/2/28 fanhl
+        }
+        secondDialPaint.apply {
+            strokeWidth = hourDialStrokeWidth // FIXME: 2019/2/28 fanhl
+            color = hourDialColor
+            strokeCap = Paint.Cap.ROUND
+        }
+        secondTextPaint.apply {
+            textSize = secondTextSize
+            color = hourDialColor // FIXME: 2019/2/28 fanhl
+        }
 
         setBackgroundColor(backgroundColor)
     }
@@ -91,18 +142,35 @@ class SkyClockView @JvmOverloads constructor(
 
         hourCenter.apply {
             x = paddingLeft + validWidth / 2f
-            y = paddingTop + validHeight * 1.25f
+            y = paddingTop + validHeight * 1.3f
         }
-        hourDialRadius = validHeight * 1f
-
+        hourDialRadius = hourCenter.y - (paddingTop + validHeight * 0.2f)
         hourTextPaint.getTextBounds("24", 0, 2, tmpRect)
-        spaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / hourDialRadius * 1.5f/*额外空余百分比*/).toFloat()
+        hourSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / hourDialRadius * 1.5f/*额外空余百分比*/).toFloat()
+
+        minuteCenter.apply {
+            x = paddingLeft + validWidth / 2f
+            y = paddingTop + validHeight * 1f
+        }
+        minuteDialRadius = minuteCenter.y - (paddingTop + validHeight * 0.4f)
+        minuteTextPaint.getTextBounds("60", 0, 2, tmpRect)
+        minuteSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / minuteDialRadius * 1.5f/*额外空余百分比*/).toFloat()
+
+        secondCenter.apply {
+            x = paddingLeft + validWidth / 2f
+            y = paddingTop + validHeight * 0.7f
+        }
+        secondDialRadius = secondCenter.y - (paddingTop + validHeight * 0.6f)
+        secondTextPaint.getTextBounds("60", 0, 2, tmpRect)
+        secondSpaceAngle = (tmpRect.width() * 360f / 2 / Math.PI / secondDialRadius * 1.5f/*额外空余百分比*/).toFloat()
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas ?: return)
         updateTimeDegree()
         drawHourDial(canvas)
+        drawMinuteDial(canvas)
+        drawSecondDial(canvas)
         invalidate()
     }
 
@@ -115,6 +183,8 @@ class SkyClockView @JvmOverloads constructor(
 
         hourDegree = hour / 12f * 360
         amPm = hour.toInt() / 12
+        minuteDegree = minute / 60f * 360
+        secondDegree = second / 60f * 360
     }
 
     private fun drawHourDial(canvas: Canvas) {
@@ -133,13 +203,69 @@ class SkyClockView @JvmOverloads constructor(
 
         for (i in 0 until 12) {
             // 表盘刻线
-            canvas.drawArc(tmpRectF, -90f + spaceAngle / 2f, 30f - spaceAngle, false, hourDialPaint)
+            canvas.drawArc(tmpRectF, -90f + hourSpaceAngle / 2f, 30f - hourSpaceAngle, false, hourDialPaint)
 
             val timeText = getHourText(i)
             hourTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
 
             canvas.drawText(timeText, hourCenter.x - tmpRect.exactCenterX(), hourCenter.y - hourDialRadius - tmpRect.exactCenterY(), hourTextPaint)
             canvas.rotate(30f, hourCenter.x, hourCenter.y)
+        }
+
+        canvas.restoreToCount(saveCount)
+    }
+
+    private fun drawMinuteDial(canvas: Canvas) {
+        val saveCount = canvas.save()
+
+        // 表盘刻线
+        tmpRectF.apply {
+            left = minuteCenter.x - minuteDialRadius
+            top = minuteCenter.y - minuteDialRadius
+            right = minuteCenter.x + minuteDialRadius
+            bottom = minuteCenter.y + minuteDialRadius
+        }
+
+        //先旋转画布（使表盘旋转）
+        canvas.rotate(-minuteDegree, minuteCenter.x, minuteCenter.y)
+
+        for (i in 0 until 12) {
+            // 表盘刻线
+            canvas.drawArc(tmpRectF, -90f + minuteSpaceAngle / 2f, 30f - minuteSpaceAngle, false, minuteDialPaint)
+
+            val timeText = getMinuteText(i)
+            minuteTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
+
+            canvas.drawText(timeText, minuteCenter.x - tmpRect.exactCenterX(), minuteCenter.y - minuteDialRadius - tmpRect.exactCenterY(), minuteTextPaint)
+            canvas.rotate(30f, minuteCenter.x, minuteCenter.y)
+        }
+
+        canvas.restoreToCount(saveCount)
+    }
+
+    private fun drawSecondDial(canvas: Canvas) {
+        val saveCount = canvas.save()
+
+        // 表盘刻线
+        tmpRectF.apply {
+            left = secondCenter.x - secondDialRadius
+            top = secondCenter.y - secondDialRadius
+            right = secondCenter.x + secondDialRadius
+            bottom = secondCenter.y + secondDialRadius
+        }
+
+        //先旋转画布（使表盘旋转）
+        canvas.rotate(-secondDegree, secondCenter.x, secondCenter.y)
+
+        for (i in 0 until 12) {
+            // 表盘刻线
+            canvas.drawArc(tmpRectF, -90f + secondSpaceAngle / 2f, 30f - secondSpaceAngle, false, secondDialPaint)
+
+            val timeText = getSecondText(i)
+            secondTextPaint.getTextBounds(timeText, 0, timeText.length, tmpRect)
+
+            canvas.drawText(timeText, secondCenter.x - tmpRect.exactCenterX(), secondCenter.y - secondDialRadius - tmpRect.exactCenterY(), secondTextPaint)
+            canvas.rotate(30f, secondCenter.x, secondCenter.y)
         }
 
         canvas.restoreToCount(saveCount)
@@ -162,5 +288,29 @@ class SkyClockView @JvmOverloads constructor(
         } else {
             hourInt.toString() /*+ if (amPm == 0) "\nam" else "\npm"*/
         }
+    }
+
+    /**
+     * @param i 第几个文字（从正上方的60分开始）
+     */
+    private fun getMinuteText(i: Int): String {
+        var minuteInt = i
+        if (minuteInt == 0) {
+            minuteInt += 12
+        }
+
+        return (minuteInt * 5).toString()
+    }
+
+    /**
+     * @param i 第几个文字（从正上方的60分开始）
+     */
+    private fun getSecondText(i: Int): String {
+        var secondInt = i
+        if (secondInt == 0) {
+            secondInt += 12
+        }
+
+        return (secondInt * 5).toString()
     }
 }
